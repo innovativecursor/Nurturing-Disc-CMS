@@ -60,98 +60,7 @@ function GlobalForm(props) {
       setInputs(props.record);
     }
   }, []);
-  // loading the functional Req and then loading the values
-  useEffect(() => {
-    if (props?.record) {
-      const trueFunctionalRequirements = extractTrueFunctionalRequirements(
-        props?.record,
-        options
-      );
-      setCheckboxValues(trueFunctionalRequirements);
-    }
-  }, [options]);
-  // loading the Website Info Req and then loading the values
-  useEffect(() => {
-    if (props?.record) {
-      const trueFunctionalRequirements = extractTrueFunctionalRequirements(
-        props?.record,
-        websiteInfoOptions
-      );
-      setCheckboxWebsiteValues(trueFunctionalRequirements);
-    }
-  }, [websiteInfoOptions]);
-  function extractTrueFunctionalRequirements(input, options) {
-    const result = [];
-    if (options.length != 0) {
-      options.forEach((option) => {
-        const key = option?.value;
-        if (input[key] === true) {
-          result.push(key);
-        }
-      });
-
-      return result;
-    }
-  }
-  const callingOptions = async () => {
-    const resLocation = await getAxiosCall("/locationOptions");
-    if (resLocation) {
-      const collection = resLocation.data?.map((el) => ({
-        label: el,
-        value: el,
-      }));
-      setLocationOptions(collection);
-    }
-    const resBooth = await getAxiosCall("/boothsizeOptions");
-    if (resBooth) {
-      const collection = resBooth.data?.map((el) => ({
-        label: el,
-        value: el,
-      }));
-      setBoothSizeOptions(collection);
-    }
-    const resBudget = await getAxiosCall("/budgetOptions");
-    if (resBudget) {
-      const collection = resBudget.data?.map((el) => ({
-        label: el,
-        value: el,
-      }));
-      setBudgetOptions(collection);
-    }
-    const functionalRequirements = await getAxiosCall("/functionalReq");
-    if (functionalRequirements) {
-      setOptions(functionalRequirements?.data);
-    }
-    const webInfo = await getAxiosCall("/webInfo");
-    if (webInfo) {
-      setWebsiteInfoOptions(webInfo?.data);
-    }
-  };
-  const onChange = (checkedValues) => {
-    setCheckboxValues(checkedValues);
-    // Create an updated inputs object based on checkedValues
-    const updatedInputs = options.reduce((acc, option) => {
-      acc[option.value] = checkedValues.includes(option.value);
-      return acc;
-    }, {});
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      ...updatedInputs,
-    }));
-  };
-  const onChange_webInfo = (checkedValues) => {
-    setCheckboxWebsiteValues(checkedValues);
-
-    // Create an updated inputs object based on checkedValues
-    const updatedInputs = websiteInfoOptions.reduce((acc, option) => {
-      acc[option.value] = checkedValues.includes(option.value);
-      return acc;
-    }, {});
-    setInputs((prevInputs) => ({
-      ...prevInputs,
-      ...updatedInputs,
-    }));
-  };
+  const callingOptions = async () => {};
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -191,18 +100,6 @@ function GlobalForm(props) {
   };
   // A submit form used for both (i.e.. Products & Awards)
   const submitForm = async () => {
-    if (props.type == "Products") {
-      if (!inputs?.location || !inputs?.booth_size || !inputs?.budget) {
-        Swal.fire({
-          title: "error",
-          text: "Location, Booth Size and Budget are mandatory fields",
-          icon: "error",
-          confirmButtonText: "Alright!",
-          allowOutsideClick: false,
-        });
-        return;
-      }
-    }
     if (props.type == "Testimonials") {
       if (!inputs?.reviewer_name || !inputs?.review) {
         Swal.fire({
@@ -215,18 +112,7 @@ function GlobalForm(props) {
         return;
       }
     }
-    if (props.type == "Awards") {
-      if (!inputs?.award_title || !inputs?.award_year) {
-        Swal.fire({
-          title: "error",
-          text: "Award Title and Award Year are mandatory fields",
-          icon: "error",
-          confirmButtonText: "Alright!",
-          allowOutsideClick: false,
-        });
-        return;
-      }
-    }
+
     try {
       switch (props.pageMode) {
         case "Add":
@@ -243,16 +129,9 @@ function GlobalForm(props) {
           // Converting images to base64
           await convertAllToBase64();
           let answer;
-          debugger;
 
-          if (props.type == "Products") {
-            answer = await postAxiosCall("/createproduct", inputs);
-          }
           if (props.type == "Testimonials") {
             answer = await postAxiosCall("/createTestimonial", inputs);
-          }
-          if (props.type == "Awards") {
-            answer = await postAxiosCall("/addAward", inputs);
           }
           if (answer) {
             Swal.fire({
@@ -280,24 +159,6 @@ function GlobalForm(props) {
           }
           //merging the new images (if uploaded)
           await convertAllToBase64();
-
-          const updatedResult = await updateAxiosCall(
-            "/products",
-            props?.record?.prd_id,
-            inputs
-          );
-          if (updatedResult) {
-            Swal.fire({
-              title: "Success",
-              text: updatedResult?.message,
-              icon: "success",
-              confirmButtonText: "Great!",
-              allowOutsideClick: false,
-            }).then(() => {
-              setInputs();
-              NavigateTo("/updateproduct");
-            });
-          }
           break;
         case "Delete":
           Swal.fire({
@@ -329,21 +190,6 @@ function GlobalForm(props) {
   const remove = async () => {
     let answer;
     switch (props.type) {
-      case "Products":
-        answer = await deleteAxiosCall("/products", props?.record?.prd_id);
-        if (answer) {
-          Swal.fire({
-            title: "Success",
-            text: answer?.message,
-            icon: "success",
-            confirmButtonText: "Great!",
-            allowOutsideClick: false,
-          });
-          setInputs();
-
-          NavigateTo("/deleteproduct");
-        }
-        break;
       case "Testimonials":
         answer = await deleteAxiosCall(
           "/deleteTestimonial",
@@ -360,21 +206,6 @@ function GlobalForm(props) {
           setInputs();
 
           NavigateTo("/deleteTestimonials");
-        }
-        break;
-      case "Awards":
-        answer = await deleteAxiosCall("/deleteAward", props?.record?.award_id);
-        if (answer) {
-          Swal.fire({
-            title: "Success",
-            text: answer?.message,
-            icon: "success",
-            confirmButtonText: "Great!",
-            allowOutsideClick: false,
-          });
-          setInputs();
-
-          NavigateTo("/deleteawards");
         }
         break;
       default:
@@ -403,171 +234,7 @@ function GlobalForm(props) {
 
   return (
     <>
-      {props?.type === "Awards" ? (
-        <PageWrapper title={`${props?.pageMode} Awards`}>
-          <div className="container mx-auto p-4 text-xl">
-            <Form onFinish={submitForm}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
-                <div className="">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Award Title
-                  </label>
-                  <Input
-                    name="award_title"
-                    required
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                    }
-                    onChange={(e) => {
-                      setInputs({ ...inputs, [e.target.name]: e.target.value });
-                    }}
-                    value={inputs?.award_title}
-                  />
-                </div>
-                <div className="">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Award Year (For eg: 2021)
-                  </label>
-                  <Select
-                    isDisabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                    }
-                    placeholder="Year"
-                    required
-                    isMulti={false}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, award_year: Number(e.value) });
-                    }}
-                    onCreateOption={(inputValue) => {
-                      const intValue = parseInt(inputValue, 10);
-                      if (!isNaN(intValue) && intValue <= currentYear) {
-                        setInputs({ ...inputs, award_year: intValue });
-                      } else {
-                        // Optionally, you can show a message to the user that only integers up to the current year are allowed.
-                        alert(`Please enter a valid year up to ${currentYear}`);
-                      }
-                    }}
-                    isClearable
-                    options={yearOptions}
-                    isSearchable
-                    formatCreateLabel={(inputValue) => `Add ${inputValue}`}
-                    value={
-                      inputs?.award_year
-                        ? { label: inputs.award_year, value: inputs.award_year }
-                        : null
-                    }
-                  />
-                </div>
-              </div>
-              <div className="my-5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <TextArea
-                  disabled={
-                    props?.pageMode === "Delete" || props?.pageMode === "View"
-                      ? true
-                      : false
-                  }
-                  type="text"
-                  id="award_desc"
-                  name="award_desc"
-                  className="mt-1 p-2 block w-full border rounded-md"
-                  onChange={(e) => {
-                    setInputs({ ...inputs, [e.target.name]: e.target.value });
-                  }}
-                  value={inputs?.award_desc}
-                />
-              </div>
-              {/* Upload Pictures */}
-              {props.pageMode === "Add" || props.pageMode === "Update" ? (
-                <div className="my-5">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Upload Pictures
-                  </label>
-                  <Upload
-                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                    // action="/upload.do"
-                    listType="picture-card"
-                    multiple={false}
-                    name="productImages"
-                    fileList={imageArray}
-                    maxCount={1}
-                    onChange={(e) => {
-                      setImageArray(e.fileList);
-                    }}
-                  >
-                    <div>
-                      <PlusOutlined />
-                      <div
-                        style={{
-                          marginTop: 8,
-                        }}
-                      >
-                        Upload
-                      </div>
-                    </div>
-                  </Upload>
-                </div>
-              ) : (
-                ""
-              )}
-              {/* Pictures */}
-              {props?.pageMode !== "Add" ? (
-                <div className="my-5">
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Pictures
-                  </label>
-                  <div className="w-full flex flex-row">
-                    {awardImages?.map((el, index) => (
-                      <div className="card" key={index}>
-                        <div className="flex h-60 justify-center">
-                          <img
-                            src={el?.url}
-                            alt="asd4e"
-                            className="object-contain"
-                          />
-                        </div>
-                        {props.pageMode !== "View" &&
-                        props.pageMode !== "Delete" ? (
-                          <div className="flex flex-row justify-center items-end">
-                            <button
-                              className="my-4 text-black p-4 font-semibold bg-orange-400 hover:text-white rounded-lg"
-                              onClick={() => deleteModal(index)}
-                              type="button"
-                            >
-                              Delete Picture
-                            </button>
-                          </div>
-                        ) : (
-                          ""
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-
-              <div className="acitonButtons w-full flex justify-center">
-                <button
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out items-center justify-center"
-                  type="submit"
-                >
-                  {props.pageMode} Data
-                </button>
-              </div>
-            </Form>
-          </div>
-        </PageWrapper>
-      ) : props?.type == "Testimonials" ? (
+      {props?.type == "Testimonials" ? (
         <PageWrapper title={`${props?.pageMode} Testimonials`}>
           <div className="container mx-auto p-4 text-xl">
             <Form onFinish={submitForm}>

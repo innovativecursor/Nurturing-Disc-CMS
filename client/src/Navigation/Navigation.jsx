@@ -13,19 +13,14 @@ import PrivateRoute from "./PrivateRoute";
 import SideDrawer from "../Components/Drawer/SideDrawer";
 import { matchRoutes, useLocation } from "react-router-dom";
 import Navbar from "../Components/NavigationBar/Navbar";
-import DeleteInner from "../Components/deleteProd/DeleteInner";
 import ProductTable from "../Components/ProductTable/ProductTable";
-import ViewInner from "../Components/viewProd/ViewInner";
-import UpdateInner from "../Components/updateProd/UpdateInner";
 import Robots from "../Components/Robots/Robots";
-import AddProduct from "../Components/createProd/AddProduct";
 import ResetPassword from "../Components/resetPassword/ResetPassword";
-import FilterMenu from "../Components/filterMenu/FilterMenu";
-import CreateAwards from "../Components/CreateAward/CreateAwards";
-import DeleteAwards from "../Components/DeleteAwards/DeleteAwards";
 import Inquiries from "../Components/Inquiries/Inquiries";
 import CreateTestimonials from "../Components/testimonials/CreateTestimonials";
 import DeleteTestimonials from "../Components/DeleteTestimonials/DeleteTestimonials";
+import Gallery from "../Components/Gallery/Gallery";
+import ProgramsEvents from "../Components/ProgramsEvents/ProgramsEvents";
 
 function Navigation(props) {
   const location = useLocation();
@@ -57,29 +52,6 @@ function Navigation(props) {
             <Route path="/reset/:token" element={<ResetPassword />} />
             <Route element={<PrivateRoute />}>
               <Route path="/home" element={<Home />} />
-              <Route path="/addproduct" element={<AddProduct />} />
-              <Route
-                path="/deleteproduct"
-                element={<ProductTable pageMode="Delete" />}
-              />
-              <Route path="/deleteinner" element={<DeleteInner />} />
-              <Route
-                path="/viewproducts"
-                element={<ProductTable pageMode="View" />}
-              />
-              <Route path="/viewinner" element={<ViewInner />} />
-              <Route
-                path="/updateproduct"
-                element={<ProductTable pageMode="Update" />}
-              />
-              <Route path="/updateinner" element={<UpdateInner />} />
-              <Route path="/filtermenu" element={<FilterMenu />} />
-              <Route path="/createawards" element={<CreateAwards />} />
-              <Route path="/deleteawardinner" element={<DeleteAwards />} />
-              <Route
-                path="/deleteawards"
-                element={<ProductTable pageMode="Delete" type="Awards" />}
-              />
               <Route path="/inquiries" element={<Inquiries />} />
               <Route
                 path="/createTestimonials"
@@ -92,6 +64,19 @@ function Navigation(props) {
               <Route
                 path="/deleteTestimonialsinner"
                 element={<DeleteTestimonials />}
+              />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/programsEvents" element={<ProgramsEvents />} />
+              <Route path="/createBlogs" element={<ProgramsEvents />} />
+              <Route
+                path="/updateBlogs"
+                pageMode="Update"
+                element={<ProgramsEvents />}
+              />
+              <Route
+                path="/DeleteBlogs"
+                pageMode="Delete"
+                element={<ProgramsEvents />}
               />
             </Route>
             <Route path="*" element={<Robots />} />

@@ -92,11 +92,7 @@ function ProductTable(props) {
       key: "testimonial_id",
       fixed: "left",
     },
-    {
-      title: "Company Name",
-      dataIndex: "company_name",
-      key: "company_name",
-    },
+
     {
       title: "Reviewer Name",
       dataIndex: "reviewer_name",

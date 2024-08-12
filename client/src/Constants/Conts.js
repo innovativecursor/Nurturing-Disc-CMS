@@ -11,4 +11,24 @@ export const Menu = [
     text: "Delete Testimonials",
     link: "/deleteTestimonials",
   },
+  {
+    text: "Gallery",
+    link: "/gallery",
+  },
+  {
+    text: "Programs & Events",
+    link: "/programsEvents",
+  },
+  {
+    text: "Add Blogs",
+    link: "/addBlogs",
+  },
+  {
+    text: "Edit Blogs",
+    link: "/editBlogs",
+  },
+  {
+    text: "Delete Blogs",
+    link: "/deleteBlogs",
+  },
 ];
