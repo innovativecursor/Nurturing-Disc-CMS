@@ -21,6 +21,7 @@ export let postAxiosCall = async (endpoint, data) => {
       // ...config, // Additional Axios request configuration
     });
     // Make the request using the provided body and endpoint
+
     const response = await instance.post(endpoint, data);
     // Return the response
     store.dispatch({ type: "LOADING", payload: false });
@@ -185,7 +186,7 @@ export let deleteAxiosCall = async (endpoint, id) => {
     return response.data;
   } catch (error) {
     store.dispatch({ type: "LOADING", payload: false });
-    
+
     Swal.fire({
       title: "Error",
       text: error?.response?.data?.message,

@@ -31,36 +31,27 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 const { TextArea } = Input;
 function GlobalForm(props) {
-  const [loading, setLoading] = useState(false);
   const [imageArray, setImageArray] = useState([]);
-  const [checkboxValues, setCheckboxValues] = useState();
-  const [checkboxWebsiteValues, setCheckboxWebsiteValues] = useState();
   const [inputs, setInputs] = useState({});
-  const [locationOptions, setLocationOptions] = useState();
-  const [boothSizeOptions, setBoothSizeOptions] = useState();
-  const [budgetOptions, setBudgetOptions] = useState();
-  const [imageClone, setImageClone] = useState(props?.record?.pictures);
-  const [awardImages, setAwardImages] = useState(props?.record?.award_pictures);
+  const [imageClone, setImageClone] = useState([]);
   const [company_testimonialImage, setCompany_testimonialImage] = useState(
     props?.record?.pictures
   );
-  const [options, setOptions] = useState([]);
-  const [websiteInfoOptions, setWebsiteInfoOptions] = useState([]);
-  // const [yearOptions, setYearOptions] = useState();
   const NavigateTo = useNavigate();
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 100 }, (_, i) => {
-    const year = currentYear - i;
-    return { value: year, label: year.toString() };
-  });
 
   useEffect(() => {
-    callingOptions();
     if (props?.record) {
       setInputs(props.record);
     }
   }, []);
-  const callingOptions = async () => {};
+  useEffect(() => {
+    if (props?.type == "Gallery") callGallery();
+  }, [props?.type]);
+
+  const callGallery = async () => {
+    const answer = await getAxiosCall("/fetchGallery");
+    setImageClone(answer?.data);
+  };
   const getBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -90,17 +81,24 @@ function GlobalForm(props) {
           const base64String = await getBase64(imageArray[i]?.originFileObj);
           B64Array.push(base64String);
         }
-        let dummyObj = [...(inputs && inputs?.pictures)];
+        if (props?.type == "Gallery") {
+          let dummyObj = { pictures: [...B64Array] };
 
-        dummyObj = [...dummyObj, ...B64Array];
-        asd = Object.assign(inputs, { pictures: dummyObj });
-        setInputs({ ...inputs, pictures: asd });
+          asd = Object.assign(inputs, { pictures: dummyObj?.pictures });
+          setInputs({ ...inputs, pictures: asd });
+        } else {
+          let dummyObj = [...(inputs && inputs?.pictures)];
+
+          dummyObj = [...dummyObj, ...B64Array];
+          asd = Object.assign(inputs, { pictures: dummyObj });
+          setInputs({ ...inputs, pictures: asd });
+        }
       }
     }
   };
   // A submit form used for both (i.e.. Products & Awards)
   const submitForm = async () => {
-    if (props.type == "Testimonials") {
+    if (props?.type == "Testimonials") {
       if (!inputs?.reviewer_name || !inputs?.review) {
         Swal.fire({
           title: "error",
@@ -112,7 +110,6 @@ function GlobalForm(props) {
         return;
       }
     }
-
     try {
       switch (props.pageMode) {
         case "Add":
@@ -157,8 +154,28 @@ function GlobalForm(props) {
             });
             return;
           }
+
           //merging the new images (if uploaded)
           await convertAllToBase64();
+          if (props.type == "Gallery") {
+            let asd = inputs;
+            console.log("asd", asd);
+
+            let answer = await postAxiosCall("/updateGallery", asd);
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+            }
+          }
+
           break;
         case "Delete":
           Swal.fire({
@@ -213,6 +230,25 @@ function GlobalForm(props) {
     }
   };
   const deleteImage = async (imageIndex) => {
+    let answer = await deleteAxiosCall(
+      "/gallery",
+      imageClone[imageIndex]?.public_id
+    );
+
+    if (answer) {
+      Swal.fire({
+        title: "Success",
+        text: answer?.message,
+        icon: "success",
+        confirmButtonText: "Great!",
+        allowOutsideClick: false,
+      }).then(() => {
+        window.location.reload(true);
+      });
+      setInputs({});
+    }
+  };
+  const deleteFnc = async (imageIndex) => {
     const dupli = inputs?.pictures;
     dupli?.splice(imageIndex, 1);
     setInputs({ ...inputs, pictures: dupli });
@@ -227,7 +263,11 @@ function GlobalForm(props) {
       allowOutsideClick: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        deleteImage(index);
+        if (props?.type == "Gallery") {
+          deleteImage(index);
+        } else {
+          deleteFnc(index);
+        }
       }
     });
   };
@@ -358,271 +398,10 @@ function GlobalForm(props) {
           </div>
         </PageWrapper>
       ) : (
-        <PageWrapper title={`${props?.pageMode} Product`}>
+        <PageWrapper title={`${props?.pageMode} Pictures`}>
           <div className="container mx-auto p-4 text-xl">
             <Form onFinish={submitForm}>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Product Name
-                  </label>
-                  <Input
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    required
-                    type="text"
-                    id="product_name"
-                    placeholder="Product Name"
-                    name="product_name"
-                    className="mt-1 p-2 block w-full border rounded-md"
-                    onChange={(e) => {
-                      setInputs({
-                        ...inputs,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                    value={inputs?.product_name}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Location (City,Country)
-                  </label>
-                  <Creatable
-                    isDisabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    placeholder="Location"
-                    required
-                    isMulti={false}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, location: e.value });
-                    }}
-                    isClearable
-                    options={
-                      locationOptions?.length != 0 ? locationOptions : []
-                    }
-                    isSearchable
-                    value={{
-                      label: inputs?.location,
-                      value: inputs?.location,
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Booth Size (For eg: 10X20)
-                  </label>
-                  <Creatable
-                    isDisabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    placeholder="Booth Size"
-                    required
-                    isMulti={false}
-                    onChange={(e) => {
-                      setInputs({
-                        ...inputs,
-                        booth_size: e.value?.toUpperCase(),
-                      });
-                    }}
-                    isClearable
-                    options={
-                      boothSizeOptions?.length != 0 ? boothSizeOptions : []
-                    }
-                    isSearchable
-                    value={{
-                      label: inputs?.booth_size?.toUpperCase(),
-                      value: inputs?.booth_size?.toUpperCase(),
-                    }}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Budget (in US$)
-                  </label>
-                  <InputNumber
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    formatter={(value) =>
-                      `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) => value?.replace(/\$\s?|(,*)/g, "")}
-                    placeholder="Budget"
-                    className="w-full rounded-md"
-                    size="large"
-                    required
-                    isMulti={false}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, budget: e });
-                    }}
-                    isClearable
-                    options={budgetOptions?.length != 0 ? budgetOptions : []}
-                    isSearchable
-                    value={inputs?.budget}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Closed Meeting Room
-                  </label>
-                  <InputNumber
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    placeholder="Closed Meeting Room"
-                    size="large"
-                    className="w-full rounded-md"
-                    min={1}
-                    max={10}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, closed_meeting_room: e });
-                    }}
-                    value={inputs?.closed_meeting_room}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Number of Demo Stations
-                  </label>
-                  <InputNumber
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    size="large"
-                    placeholder="Demo Stations"
-                    className="w-full rounded-md"
-                    min={1}
-                    max={10}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, demo_stations: e });
-                    }}
-                    value={inputs?.demo_stations}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Open Discussion Areas
-                  </label>
-                  <InputNumber
-                    disabled={
-                      props?.pageMode === "Delete" || props?.pageMode === "View"
-                        ? true
-                        : false
-                    }
-                    size="large"
-                    placeholder="Open Discussion Areas"
-                    className="w-full rounded-md"
-                    min={1}
-                    max={10}
-                    onChange={(e) => {
-                      setInputs({ ...inputs, open_discussion_area: e });
-                    }}
-                    value={inputs?.open_discussion_area}
-                  />
-                </div>
-              </div>
-
-              <div className="my-5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Filter by Functional Requirements
-                </label>
-                <br />
-                <Checkbox.Group
-                  disabled={
-                    props?.pageMode === "Delete" || props?.pageMode === "View"
-                      ? true
-                      : false
-                  }
-                  options={options}
-                  onChange={onChange}
-                  value={checkboxValues}
-                />
-                <br />
-              </div>
-              <div className="my-5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Website Placement info
-                </label>
-                <br />
-                <Checkbox.Group
-                  disabled={
-                    props?.pageMode === "Delete" || props?.pageMode === "View"
-                      ? true
-                      : false
-                  }
-                  options={websiteInfoOptions}
-                  onChange={onChange_webInfo}
-                  value={checkboxWebsiteValues}
-                />
-                <br />
-              </div>
-              <div className="my-5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Key highlights
-                </label>
-                <TextArea
-                  disabled={
-                    props?.pageMode === "Delete" || props?.pageMode === "View"
-                      ? true
-                      : false
-                  }
-                  type="text"
-                  id="key_highlights"
-                  name="key_highlights"
-                  className="mt-1 p-2 block  w-full border rounded-md"
-                  style={{ minHeight: "15rem" }}
-                  onChange={(e) => {
-                    setInputs({ ...inputs, [e.target.name]: e.target.value });
-                  }}
-                  value={inputs?.key_highlights}
-                />
-              </div>
-              <div className="my-5">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <TextArea
-                  disabled={
-                    props?.pageMode === "Delete" || props?.pageMode === "View"
-                      ? true
-                      : false
-                  }
-                  required
-                  type="text"
-                  id="description"
-                  name="description"
-                  className="mt-1 p-2 block w-full border rounded-md"
-                  style={{ minHeight: "15rem" }}
-                  onChange={(e) => {
-                    setInputs({ ...inputs, [e.target.name]: e.target.value });
-                  }}
-                  value={inputs?.description}
-                />
-              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
               {/* Upload Pictures */}
               {props.pageMode === "Add" || props.pageMode === "Update" ? (
                 <div className="my-5">

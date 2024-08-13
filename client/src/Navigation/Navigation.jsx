@@ -65,7 +65,10 @@ function Navigation(props) {
                 path="/deleteTestimonialsinner"
                 element={<DeleteTestimonials />}
               />
-              <Route path="/gallery" element={<Gallery />} />
+              <Route
+                path="/gallery"
+                element={<Gallery pageMode="Update" type="Gallery" />}
+              />
               <Route path="/programsEvents" element={<ProgramsEvents />} />
               <Route path="/createBlogs" element={<ProgramsEvents />} />
               <Route
