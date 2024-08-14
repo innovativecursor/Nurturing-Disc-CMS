@@ -16,8 +16,16 @@ export const Menu = [
     link: "/gallery",
   },
   {
-    text: "Programs & Events",
-    link: "/programsEvents",
+    text: "Add Events",
+    link: "/createEvents",
+  },
+  {
+    text: "Update Events",
+    link: "/updateEvents",
+  },
+  {
+    text: "Delete Events",
+    link: "/deleteEvents",
   },
   {
     text: "Add Blogs",

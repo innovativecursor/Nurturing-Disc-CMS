@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
+const eventController = require("../controllers/eventController");
 const galleryController = require("../controllers/galleryController");
 const inquiryController = require("../controllers/inquiryController");
 const testimonialController = require("../controllers/testimonialController");
@@ -51,5 +52,14 @@ router.delete(
   "/deleteTestimonial/:id",
   authenticateUser,
   testimonialController.deleteTestimonial
+);
+// Events route
+router.get("/fetchEvents", eventController.getEvents);
+router.post("/postEvents", authenticateUser, eventController.postEvents);
+router.put("/updateEvent/:id", authenticateUser, eventController.updateEvents);
+router.delete(
+  "/deleteEvents/:id",
+  authenticateUser,
+  eventController.deleteEvents
 );
 module.exports = router;

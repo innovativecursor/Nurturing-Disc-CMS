@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import GlobalForm from "../Components/GlobalForm/GlobalForm";
+import GlobalForm from "../GlobalForm/GlobalForm";
 import { useLocation } from "react-router-dom";
 
-function UpdateAwards() {
+function UpdateEvents() {
   const location = useLocation();
   const [record, setRecord] = useState(location.state);
   useEffect(() => {
@@ -12,13 +12,14 @@ function UpdateAwards() {
       setRecord(asd);
     }
   }, [location]);
+
   return (
     <>
       {record ? (
-        <GlobalForm pageMode="Update" type="Awards" record={record} />
+        <GlobalForm pageMode="Update" type="Events" record={record} />
       ) : null}
     </>
   );
 }
 
-export default UpdateAwards;
+export default UpdateEvents;

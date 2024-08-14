@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import "./App.css";
-import Navigation from "./Navigation/Navigation";
+import Navigation from "./Components/Navigation/Navigation";
 import { Spin } from "antd";
 import { useEffect } from "react";
 

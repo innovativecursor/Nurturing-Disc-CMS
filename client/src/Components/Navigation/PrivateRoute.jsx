@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
-import Robots from "../Components/Robots/Robots";
+import Robots from "../Robots/Robots";
 
 function PrivateRoute(props) {
   let auth = props.isAuthenticated;

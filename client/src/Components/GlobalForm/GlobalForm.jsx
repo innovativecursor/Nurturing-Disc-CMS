@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import PageWrapper from "../PageContainer/PageWrapper";
+import { parseISO } from "date-fns";
 import {
   Button,
   Cascader,
@@ -29,6 +30,7 @@ import {
 
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 const { TextArea } = Input;
 function GlobalForm(props) {
   const [imageArray, setImageArray] = useState([]);
@@ -42,12 +44,26 @@ function GlobalForm(props) {
   useEffect(() => {
     if (props?.record) {
       setInputs(props.record);
+      setImageClone(props?.record?.pictures);
     }
-  }, []);
+  }, [props?.record]);
   useEffect(() => {
-    if (props?.type == "Gallery") callGallery();
+    if (props?.type == "Gallery") {
+      callGallery();
+    }
   }, [props?.type]);
+  const beforeUpload = (file) => {
+    const isValidType = ["image/png", "image/jpeg", "image/webp"].includes(
+      file.type
+    );
 
+    if (!isValidType) {
+      message.error("You can only upload PNG, JPG, JPEG, or WEBP files!");
+      return;
+    }
+
+    return isValidType; // Return false to prevent the upload if the file type is not valid
+  };
   const callGallery = async () => {
     const answer = await getAxiosCall("/fetchGallery");
     setImageClone(answer?.data);
@@ -125,22 +141,39 @@ function GlobalForm(props) {
           }
           // Converting images to base64
           await convertAllToBase64();
-          let answer;
 
           if (props.type == "Testimonials") {
+            let answer;
             answer = await postAxiosCall("/createTestimonial", inputs);
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+            }
           }
-          if (answer) {
-            Swal.fire({
-              title: "Success",
-              text: answer?.message,
-              icon: "success",
-              confirmButtonText: "Great!",
-              allowOutsideClick: false,
-            }).then(() => {
-              window.location.reload(true);
-            });
-            setInputs({});
+
+          if (props.type == "Events") {
+            let answer;
+            answer = await postAxiosCall("/postEvents", inputs);
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+            }
           }
           break;
         case "Update":
@@ -158,10 +191,7 @@ function GlobalForm(props) {
           //merging the new images (if uploaded)
           await convertAllToBase64();
           if (props.type == "Gallery") {
-            let asd = inputs;
-            console.log("asd", asd);
-
-            let answer = await postAxiosCall("/updateGallery", asd);
+            let answer = await postAxiosCall("/updateGallery", inputs);
             if (answer) {
               Swal.fire({
                 title: "Success",
@@ -175,7 +205,26 @@ function GlobalForm(props) {
               setInputs({});
             }
           }
-
+          if (props.type == "Events") {
+            let answer = await updateAxiosCall(
+              "/updateEvent",
+              props?.record?.event_id,
+              inputs
+            );
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+              NavigateTo("/updateEvents");
+            }
+          }
           break;
         case "Delete":
           Swal.fire({
@@ -326,6 +375,8 @@ function GlobalForm(props) {
                     name="productImages"
                     fileList={imageArray}
                     maxCount={1}
+                    beforeUpload={beforeUpload} // Add the beforeUpload function
+                    accept=".png, .jpg, .jpeg, .webp" // Restrict file types for the file dialog
                     onChange={(e) => {
                       setImageArray(e.fileList);
                     }}
@@ -397,7 +448,7 @@ function GlobalForm(props) {
             </Form>
           </div>
         </PageWrapper>
-      ) : (
+      ) : props?.type == "Gallery" ? (
         <PageWrapper title={`${props?.pageMode} Pictures`}>
           <div className="container mx-auto p-4 text-xl">
             <Form onFinish={submitForm}>
@@ -419,9 +470,160 @@ function GlobalForm(props) {
                     name="productImages"
                     fileList={imageArray}
                     maxCount={4}
+                    beforeUpload={beforeUpload} // Add the beforeUpload function
+                    accept=".png, .jpg, .jpeg, .webp" // Restrict file types for the file dialog
                     onChange={(e) => {
                       setImageArray(e.fileList);
                     }}
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </div>
+                  </Upload>
+                </div>
+              ) : (
+                ""
+              )}
+              {/* Pictures */}
+              {props?.pageMode !== "Add" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Pictures
+                  </label>
+                  <div className="w-full flex flex-row">
+                    {imageClone?.map((el, index) => (
+                      <div className="card" key={index}>
+                        <div className="flex h-60 justify-center">
+                          <img
+                            src={el?.url}
+                            alt="asd4e"
+                            className="object-contain"
+                          />
+                        </div>
+                        {props.pageMode !== "View" &&
+                        props.pageMode !== "Delete" ? (
+                          <div className="flex flex-row justify-center items-end">
+                            <button
+                              className="my-4 text-black p-4 font-semibold bg-orange-400 hover:text-white rounded-lg"
+                              onClick={() => deleteModal(index)}
+                              type="button"
+                            >
+                              Delete Picture
+                            </button>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+              {props.pageMode === "View" ? (
+                ""
+              ) : (
+                <div className="acitonButtons w-full flex justify-center">
+                  <button
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out items-center justify-center"
+                    type="submit"
+                  >
+                    {props.pageMode} Data
+                  </button>
+                </div>
+              )}
+            </Form>
+          </div>
+        </PageWrapper>
+      ) : (
+        <PageWrapper title={`${props?.pageMode} Events`}>
+          <div className="container mx-auto p-4 text-xl">
+            <Form onFinish={submitForm}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Name of the Event
+                  </label>
+                  <Input
+                    name="event_name"
+                    required
+                    disabled={props?.pageMode === "Delete"}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, [e.target.name]: e.target.value });
+                    }}
+                    value={inputs?.event_name}
+                  />
+                </div>
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Event Location
+                  </label>
+                  <Input
+                    name="event_location"
+                    required
+                    disabled={props?.pageMode === "Delete"}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, [e.target.name]: e.target.value });
+                    }}
+                    value={inputs?.event_location}
+                  />
+                </div>
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Event Date
+                  </label>
+                  <Space direction="vertical">
+                    <DatePicker
+                      size="medium"
+                      disabled={props?.pageMode === "Delete"}
+                      name="event_date"
+                      value={
+                        inputs?.event_date
+                          ? dayjs(inputs.event_date, "YYYY-MM-DD")
+                          : null
+                      }
+                      onChange={(date, dateString) => {
+                        setInputs({
+                          ...inputs,
+                          event_date: dateString,
+                        });
+                      }}
+                    />
+                  </Space>
+                </div>
+              </div>
+              {/* Upload Pictures */}
+              {props.pageMode === "Add" || props.pageMode === "Update" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Upload Pictures
+                  </label>
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    multiple={false}
+                    name="productImages"
+                    fileList={imageArray}
+                    maxCount={4}
+                    onChange={(e) => {
+                      setImageArray(e.fileList);
+                    }}
+                    beforeUpload={beforeUpload} // Add the beforeUpload function
+                    accept=".png, .jpg, .jpeg, .webp" // Restrict file types for the file dialog
                   >
                     <div>
                       <PlusOutlined />

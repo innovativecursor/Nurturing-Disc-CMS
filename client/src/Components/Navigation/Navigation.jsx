@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Login from "../Components/Login/Login";
+import Login from "../Login/Login";
 import {
   BrowserRouter as Router,
   Route,
@@ -7,20 +7,22 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom";
-import Home from "../Components/Home/Home";
+import Home from "../Home/Home";
 import { connect } from "react-redux";
 import PrivateRoute from "./PrivateRoute";
-import SideDrawer from "../Components/Drawer/SideDrawer";
+import SideDrawer from "../Drawer/SideDrawer";
 import { matchRoutes, useLocation } from "react-router-dom";
-import Navbar from "../Components/NavigationBar/Navbar";
-import ProductTable from "../Components/ProductTable/ProductTable";
-import Robots from "../Components/Robots/Robots";
-import ResetPassword from "../Components/resetPassword/ResetPassword";
-import Inquiries from "../Components/Inquiries/Inquiries";
-import CreateTestimonials from "../Components/testimonials/CreateTestimonials";
-import DeleteTestimonials from "../Components/DeleteTestimonials/DeleteTestimonials";
-import Gallery from "../Components/Gallery/Gallery";
-import ProgramsEvents from "../Components/ProgramsEvents/ProgramsEvents";
+import Navbar from "../NavigationBar/Navbar";
+import ProductTable from "../ProductTable/ProductTable";
+import Robots from "../Robots/Robots";
+import ResetPassword from "../resetPassword/ResetPassword";
+import Inquiries from "../Inquiries/Inquiries";
+import CreateTestimonials from "../testimonials/CreateTestimonials";
+import DeleteTestimonials from "../DeleteTestimonials/DeleteTestimonials";
+import Gallery from "../Gallery/Gallery";
+import CreateEvents from "../CreateEvents/CreateEvents";
+import UpdateEvents from "../UpdateEvents/UpdateEvents";
+import DeleteEvents from "../DeleteEvents/DeleteEvents";
 
 function Navigation(props) {
   const location = useLocation();
@@ -69,9 +71,19 @@ function Navigation(props) {
                 path="/gallery"
                 element={<Gallery pageMode="Update" type="Gallery" />}
               />
-              <Route path="/programsEvents" element={<ProgramsEvents />} />
-              <Route path="/createBlogs" element={<ProgramsEvents />} />
+              <Route path="/createEvents" element={<CreateEvents />} />
               <Route
+                path="/updateEvents"
+                element={<ProductTable pageMode="Update" type="Events" />}
+              />
+              <Route path="/updateEventsinner" element={<UpdateEvents />} />
+              <Route
+                path="/deleteEvents"
+                element={<ProductTable pageMode="Delete" type="Events" />}
+              />
+              <Route path="/deleteEventsinner" element={<DeleteEvents />} />
+              {/* <Route path="/createBlogs" element={<ProductTable pageMode="Delete" type="Testimonials" />} /> */}
+              {/* <Route
                 path="/updateBlogs"
                 pageMode="Update"
                 element={<ProgramsEvents />}
@@ -80,7 +92,7 @@ function Navigation(props) {
                 path="/DeleteBlogs"
                 pageMode="Delete"
                 element={<ProgramsEvents />}
-              />
+              /> */}
             </Route>
             <Route path="*" element={<Robots />} />
           </Routes>

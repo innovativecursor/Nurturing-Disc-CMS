@@ -66,25 +66,6 @@ function ProductTable(props) {
     },
   ];
 
-  const award_columns = [
-    {
-      title: "Award Id",
-      dataIndex: "award_id",
-      key: "award_id",
-      fixed: "left",
-    },
-    {
-      title: "Award Year",
-      dataIndex: "award_year",
-      key: "award_year",
-    },
-    {
-      title: "Award Title",
-      dataIndex: "award_title",
-      key: "award_title",
-    },
-  ];
-
   const testimonials_col = [
     {
       title: "Testimonial Id",
@@ -97,6 +78,25 @@ function ProductTable(props) {
       title: "Reviewer Name",
       dataIndex: "reviewer_name",
       key: "reviewer_name",
+    },
+  ];
+  const events_col = [
+    {
+      title: "Event Name",
+      dataIndex: "event_name",
+      key: "event_name",
+      fixed: "left",
+    },
+
+    {
+      title: "Event Location",
+      dataIndex: "event_location",
+      key: "event_location",
+    },
+    {
+      title: "Event Date",
+      dataIndex: "event_date",
+      key: "event_date",
     },
   ];
 
@@ -113,18 +113,15 @@ function ProductTable(props) {
 
   const answer = async () => {
     try {
-      if (props.type === "Awards") {
-        const result = await getAxiosCall("/getAward");
-        setResult(result.data);
-      } else if (props.type === "Inquiries") {
+      if (props.type === "Inquiries") {
         const result = await getAxiosCall("/fetchInquiries");
         setResult(result.data);
       } else if (props.type == "Testimonials") {
         const result = await getAxiosCall("/fetchTestimonials");
         setResult(result.data);
       } else {
-        const result = await getAxiosCall("/products");
-        setResult(result.data.products);
+        const result = await getAxiosCall("/fetchEvents");
+        setResult(result.data);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -144,19 +141,19 @@ function ProductTable(props) {
 
   const renderTable = () => {
     switch (props.type) {
-      case "Awards":
+      case "Events":
         return (
-          <PageWrapper title={`${props.pageMode} Award`}>
+          <PageWrapper title={`${props.pageMode} Events`}>
             <Table
-              columns={award_columns}
+              columns={events_col}
               dataSource={result}
               size="large"
               onRow={(record) => ({
                 onClick: () => {
                   navigateTo(
                     props.pageMode === "Delete"
-                      ? "/deleteawardinner"
-                      : "/updateawardinner",
+                      ? "/deleteEventsinner"
+                      : "/updateEventsinner",
                     { state: record }
                   );
                 },

@@ -58,7 +58,7 @@ exports.updateAwards = async (req, res) => {
     }
 
     // Generate the folder name based on the product ID
-    const folderName = `${process.env.CLOUDINARY_DB_DEV}/award_${id}`;
+    const folderName = `${process.env.CLOUDINARY_DB}/award_${id}`;
 
     // Fetch existing images from Cloudinary
     const cloudinaryFiles = await cloudinary.api.resources({
