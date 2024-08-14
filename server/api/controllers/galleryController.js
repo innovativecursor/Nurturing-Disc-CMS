@@ -1,7 +1,6 @@
 // controllers/userController.js
 
 const cloudinary = require("../../utils/cloudinary");
-const Gallery = require("../models/gallery");
 
 exports.getGallery = async (req, res) => {
   try {
