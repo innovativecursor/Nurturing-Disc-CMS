@@ -20,6 +20,10 @@ const Event = sequelize.define("Event", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  event_description: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   pictures: { type: DataTypes.JSON, allowNull: false },
 });
 

@@ -8,6 +8,7 @@ const validateEvent = (event) => {
     event_name: Joi.string().required(),
     event_date: Joi.date().iso().required(), // Validate ISO 8601 date format
     event_location: Joi.string().required(),
+    event_description: Joi.string().required(),
     pictures: Joi.any().required(),
   });
 
@@ -47,13 +48,20 @@ exports.postEvents = async (req, res) => {
   }
 
   try {
-    const { event_name, event_date, event_location, pictures } = req.body;
+    const {
+      event_name,
+      event_date,
+      event_location,
+      event_description,
+      pictures,
+    } = req.body;
 
     // Create the event in the database
     const event = await Event.create({
       event_name,
       event_date,
       event_location,
+      event_description,
       pictures: [],
     });
 
