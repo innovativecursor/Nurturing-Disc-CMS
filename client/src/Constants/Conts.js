@@ -12,6 +12,14 @@ export const Menu = [
     link: "/deleteTestimonials",
   },
   {
+    text: "Add Staff",
+    link: "/createStaff",
+  },
+  {
+    text: "Delete Staff",
+    link: "/deleteStaff",
+  },
+  {
     text: "Gallery",
     link: "/gallery",
   },
@@ -27,6 +35,7 @@ export const Menu = [
     text: "Delete Events",
     link: "/deleteEvents",
   },
+
   {
     text: "Add Blogs",
     link: "/addBlogs",

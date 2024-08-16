@@ -1,6 +1,7 @@
 const Testimonial = require("../models/testimonials");
 const cloudinary = require("../../utils/cloudinary");
 const Joi = require("joi");
+const { formattedResult } = require("../utils/Consts");
 
 // Define Joi schema
 const testimonialSchema = Joi.object({
@@ -10,7 +11,8 @@ const testimonialSchema = Joi.object({
 });
 exports.getTestimonials = async (req, res) => {
   const testimonialsFetched = await Testimonial.findAll({});
-  res.status(200).json(testimonialsFetched);
+  const result = formattedResult(testimonialsFetched);
+  res.status(200).json(result);
 };
 exports.createTestimonial = async (req, res) => {
   // Validate request data against the schema

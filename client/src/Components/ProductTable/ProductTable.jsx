@@ -99,7 +99,20 @@ function ProductTable(props) {
       key: "event_date",
     },
   ];
+  const staff_col = [
+    {
+      title: "Name of the Staff",
+      dataIndex: "staff_name",
+      key: "staff_name",
+      fixed: "left",
+    },
 
+    {
+      title: "Staff Designation",
+      dataIndex: "staff_position",
+      key: "staff_position",
+    },
+  ];
   const [result, setResult] = useState(null);
   const navigateTo = useNavigate();
 
@@ -118,6 +131,9 @@ function ProductTable(props) {
         setResult(result.data);
       } else if (props.type == "Testimonials") {
         const result = await getAxiosCall("/fetchTestimonials");
+        setResult(result.data);
+      } else if (props?.type == "Staff") {
+        const result = await getAxiosCall("/fetchStaff");
         setResult(result.data);
       } else {
         const result = await getAxiosCall("/fetchEvents");
@@ -184,6 +200,25 @@ function ProductTable(props) {
               onRow={(record) => ({
                 onClick: () => {
                   navigateTo("/deleteTestimonialsinner", { state: record });
+                },
+              })}
+              scroll={{ x: 1000, y: 1500 }}
+            />
+          </PageWrapper>
+        );
+      case "Staff":
+        return (
+          <PageWrapper title={`${props.pageMode} Events`}>
+            <Table
+              columns={staff_col}
+              dataSource={result}
+              size="large"
+              onRow={(record) => ({
+                onClick: () => {
+                  navigateTo(
+                    props.pageMode === "Delete" ? "/deleteStaffinner" : "",
+                    { state: record }
+                  );
                 },
               })}
               scroll={{ x: 1000, y: 1500 }}

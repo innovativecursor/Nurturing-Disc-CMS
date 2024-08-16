@@ -23,6 +23,8 @@ import Gallery from "../Gallery/Gallery";
 import CreateEvents from "../CreateEvents/CreateEvents";
 import UpdateEvents from "../UpdateEvents/UpdateEvents";
 import DeleteEvents from "../DeleteEvents/DeleteEvents";
+import AddStaff from "../AddStaff/AddStaff";
+import DeleteStaff from "../DeleteStaff/DeleteStaff";
 
 function Navigation(props) {
   const location = useLocation();
@@ -67,6 +69,13 @@ function Navigation(props) {
                 path="/deleteTestimonialsinner"
                 element={<DeleteTestimonials />}
               />
+              <Route path="/createStaff" element={<AddStaff />} />
+              <Route
+                path="/deleteStaff"
+                element={<ProductTable pageMode="Delete" type="Staff" />}
+              />
+              <Route path="/deleteStaffinner" element={<DeleteStaff />} />
+
               <Route
                 path="/gallery"
                 element={<Gallery pageMode="Update" type="Gallery" />}

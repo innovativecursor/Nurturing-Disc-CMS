@@ -6,6 +6,7 @@ const eventController = require("../controllers/eventController");
 const galleryController = require("../controllers/galleryController");
 const inquiryController = require("../controllers/inquiryController");
 const testimonialController = require("../controllers/testimonialController");
+const staffController = require("../controllers/staffController");
 const authenticateUser = require("../middleware/authenticateUser");
 const { apiLimiter } = require("../middleware/apiLimiter");
 
@@ -61,5 +62,13 @@ router.delete(
   "/deleteEvents/:id",
   authenticateUser,
   eventController.deleteEvents
+);
+// Staff routes
+router.get("/fetchStaff", staffController.getStaff);
+router.post("/createStaff", authenticateUser, staffController.postStaff);
+router.delete(
+  "/deleteStaff/:id",
+  authenticateUser,
+  staffController.deleteStaff
 );
 module.exports = router;

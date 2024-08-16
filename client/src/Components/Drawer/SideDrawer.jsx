@@ -3,48 +3,6 @@ import { Button, Drawer, Radio, Space } from "antd";
 import { FaArrowRight } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { Menu } from "../../Constants/Conts";
-const menu = [
-  {
-    text: "Add Product",
-    link: "/addproduct",
-  },
-  {
-    text: "Update Product",
-    link: "/updateproduct",
-  },
-  {
-    text: "Delete Product",
-    link: "/deleteproduct",
-  },
-  {
-    text: "View Products",
-    link: "/viewproducts",
-  },
-  {
-    text: "Filter Menu",
-    link: "/filtermenu",
-  },
-  {
-    text: "Create Award",
-    link: "/createawards",
-  },
-  {
-    text: "Delete Award",
-    link: "/deleteawards",
-  },
-  {
-    text: "Inquiries",
-    link: "/inquiries",
-  },
-  {
-    text: "Create Testimonials",
-    link: "/createTestimonials",
-  },
-  {
-    text: "Delete Testimonials",
-    link: "/deleteTestimonials",
-  },
-];
 function SideDrawer() {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState("left");

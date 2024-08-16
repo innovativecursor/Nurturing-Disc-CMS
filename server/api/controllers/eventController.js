@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const cloudinary = require("../../utils/cloudinary");
 const Event = require("../models/event");
+const { formattedEventResults } = require("../utils/Consts");
 
 // Joi validation schema
 const validateEvent = (event) => {
@@ -19,16 +20,8 @@ const validateEvent = (event) => {
 exports.getEvents = async (req, res) => {
   try {
     const events = await Event.findAll({});
-
-    // Map over the events and format the date
-    const formattedEvents = events.map((event) => {
-      return {
-        ...event.toJSON(), // Convert the Sequelize instance to a plain object
-        event_date: event.event_date.toISOString().split("T")[0], // Format the date
-      };
-    });
-
-    res.status(200).json(formattedEvents);
+    const result = formattedEventResults(events);
+    res.status(200).json(result);
   } catch (error) {
     res
       .status(500)
