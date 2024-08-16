@@ -40,7 +40,7 @@ app.use("/", routes);
 
 (async () => {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: true });
     console.log("Database synchronized");
   } catch (error) {
     console.error("Unable to sync database:", error);
