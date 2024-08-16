@@ -38,7 +38,7 @@ export const Menu = [
 
   {
     text: "Add Blogs",
-    link: "/addBlogs",
+    link: "/createBlogs",
   },
   {
     text: "Edit Blogs",

@@ -27,7 +27,8 @@ import {
   postAxiosCall,
   updateAxiosCall,
 } from "../../Axios/UniversalAxiosCalls";
-
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -39,6 +40,7 @@ function GlobalForm(props) {
   const [company_testimonialImage, setCompany_testimonialImage] = useState(
     props?.record?.pictures
   );
+  const [writeup, setWriteup] = useState("");
   const NavigateTo = useNavigate();
 
   useEffect(() => {
@@ -758,7 +760,7 @@ function GlobalForm(props) {
             </Form>
           </div>
         </PageWrapper>
-      ) : (
+      ) : props?.type == "Staff" ? (
         <PageWrapper title={`${props?.pageMode} Staff`}>
           <div className="container mx-auto p-4 text-xl">
             <Form onFinish={submitForm}>
@@ -791,6 +793,129 @@ function GlobalForm(props) {
                     value={inputs?.staff_position}
                   />
                 </div>
+              </div>
+              {/* Upload Pictures */}
+              {props.pageMode === "Add" || props.pageMode === "Update" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Upload Pictures
+                  </label>
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    multiple={false}
+                    name="productImages"
+                    fileList={imageArray}
+                    maxCount={1}
+                    onChange={(e) => {
+                      setImageArray(e.fileList);
+                    }}
+                    beforeUpload={beforeUpload} // Add the beforeUpload function
+                    accept=".png, .jpg, .jpeg, .webp" // Restrict file types for the file dialog
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </div>
+                  </Upload>
+                </div>
+              ) : (
+                ""
+              )}
+              {/* Pictures */}
+              {props?.pageMode !== "Add" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Pictures
+                  </label>
+                  <div className="w-full flex flex-row">
+                    {imageClone?.map((el, index) => (
+                      <div className="card" key={index}>
+                        <div className="flex h-60 justify-center">
+                          <img
+                            src={el?.url}
+                            alt="asd4e"
+                            className="object-contain"
+                          />
+                        </div>
+                        {props.pageMode !== "View" &&
+                        props.pageMode !== "Delete" ? (
+                          <div className="flex flex-row justify-center items-end">
+                            <button
+                              className="my-4 text-black p-4 font-semibold bg-orange-400 hover:text-white rounded-lg"
+                              onClick={() => deleteModal(index)}
+                              type="button"
+                            >
+                              Delete Picture
+                            </button>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+              {props.pageMode === "View" ? (
+                ""
+              ) : (
+                <div className="acitonButtons w-full flex justify-center">
+                  <button
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out items-center justify-center"
+                    type="submit"
+                  >
+                    {props.pageMode} Data
+                  </button>
+                </div>
+              )}
+            </Form>
+          </div>
+        </PageWrapper>
+      ) : (
+        <PageWrapper title={`${props?.pageMode} Blogs`}>
+          <div className="container mx-auto p-4 text-xl">
+            <Form onFinish={submitForm}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Title of the Blog
+                  </label>
+                  <Input
+                    name="blog_title"
+                    required
+                    disabled={props?.pageMode === "Delete"}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, [e.target.name]: e.target.value });
+                    }}
+                    value={inputs?.blog_title}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col my-10">
+                <label className="block text-sm font-medium text-gray-700">
+                  Writeup of the Blog
+                </label>
+                <ReactQuill
+                  className="h-96 mb-4"
+                  theme="snow"
+                  value={writeup}
+                  onChange={setWriteup}
+                />
               </div>
               {/* Upload Pictures */}
               {props.pageMode === "Add" || props.pageMode === "Update" ? (
