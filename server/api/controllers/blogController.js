@@ -206,10 +206,10 @@ exports.deleteBlogs = async (req, res) => {
     await cloudinary.api.delete_folder(folderName);
     await blog.destroy();
 
-    res.status(200).json({ message: "staff deleted successfully" });
+    res.status(200).json({ message: "Blog deleted successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to delete staff", error: error.message });
+      .json({ message: "Failed to delete Blog", error: error.message });
   }
 };

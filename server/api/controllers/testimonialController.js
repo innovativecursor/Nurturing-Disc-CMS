@@ -31,7 +31,7 @@ exports.createTestimonial = async (req, res) => {
       review,
       pictures: [],
     });
-    // Generate a unique folder name using the product ID
+    // Generate a unique folder name using the testimonial
     const folderName = `${process.env.CLOUDINARY_DB}/testimonial${creation.testimonial_id}`;
 
     // Upload pictures to Cloudinary
@@ -43,7 +43,7 @@ exports.createTestimonial = async (req, res) => {
 
     const uploadedImages = await Promise.all(uploadPromises);
 
-    // Update the product with the uploaded images
+    // Update the testimonial with the uploaded images
     await creation.update({ pictures: uploadedImages });
     res.status(200).json({ message: "Created Testimonial Successfully" });
   } catch (error) {
@@ -56,13 +56,13 @@ exports.deleteTestimonial = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const product = await Testimonial.findByPk(id);
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+    const testimonial = await Testimonial.findByPk(id);
+    if (!testimonial) {
+      return res.status(404).json({ message: "testimonial not found" });
     }
 
-    // Extract the pictures array from the product
-    const { pictures } = product;
+    // Extract the pictures array from the testimonial
+    const { pictures } = testimonial;
     // Extract the folder name from the first picture URL (assuming they all belong to the same folder)
     const folderName = pictures[0].folder;
     // Create a list of promises to delete each image from Cloudinary
@@ -92,13 +92,13 @@ exports.deleteTestimonial = async (req, res) => {
     // Delete the folder in Cloudinary
     await cloudinary.api.delete_folder(folderName);
 
-    // Delete the product from the database
-    await product.destroy();
+    // Delete the testimonial from the database
+    await testimonial.destroy();
 
-    res.status(200).json({ message: "Product deleted successfully" });
+    res.status(200).json({ message: "Testimonial deleted successfully" });
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Failed to delete product", error: error.message });
+      .json({ message: "Failed to delete testimonial", error: error.message });
   }
 };
