@@ -7,6 +7,7 @@ const galleryController = require("../controllers/galleryController");
 const inquiryController = require("../controllers/inquiryController");
 const testimonialController = require("../controllers/testimonialController");
 const staffController = require("../controllers/staffController");
+const blogController = require("../controllers/blogController");
 const authenticateUser = require("../middleware/authenticateUser");
 const { apiLimiter } = require("../middleware/apiLimiter");
 
@@ -71,4 +72,9 @@ router.delete(
   authenticateUser,
   staffController.deleteStaff
 );
+// Blog routes
+router.get("/fetchBlogs", blogController.getBlogs);
+router.post("/createBlog", authenticateUser, blogController.postBlogs);
+router.put("/updateBlog/:id", authenticateUser, blogController.updateBlogs);
+router.delete("/deleteBlog/:id", authenticateUser, blogController.deleteBlogs);
 module.exports = router;

@@ -26,6 +26,8 @@ import DeleteEvents from "../DeleteEvents/DeleteEvents";
 import AddStaff from "../AddStaff/AddStaff";
 import DeleteStaff from "../DeleteStaff/DeleteStaff";
 import AddBlogs from "../AddBlogs/AddBlogs";
+import DeleteBlogs from "../DeleteBlogs/DeleteBlogs";
+import UpdateBlogs from "../UpdateBlogs/UpdateBlogs";
 
 function Navigation(props) {
   const location = useLocation();
@@ -93,16 +95,26 @@ function Navigation(props) {
               />
               <Route path="/deleteEventsinner" element={<DeleteEvents />} />
               <Route path="/createBlogs" element={<AddBlogs />} />
-              {/* <Route
+              <Route
                 path="/updateBlogs"
-              pageMode="Update"
-                element={<ProgramsEvents />}
+                pageMode="Update"
+                element={<ProductTable pageMode="Update" type="Blogs" />}
               />
               <Route
-                path="/DeleteBlogs"
+                path="/updateBlogsinner"
+                pageMode="Update"
+                element={<UpdateBlogs />}
+              />
+              <Route
+                path="/deleteBlogs"
                 pageMode="Delete"
-                element={<ProgramsEvents />}
-              /> */}
+                element={<ProductTable pageMode="Delete" type="Blogs" />}
+              />
+              <Route
+                path="/deleteBlogsinner"
+                pageMode="Delete"
+                element={<DeleteBlogs />}
+              />
             </Route>
             <Route path="*" element={<Robots />} />
           </Routes>

@@ -40,7 +40,6 @@ function GlobalForm(props) {
   const [company_testimonialImage, setCompany_testimonialImage] = useState(
     props?.record?.pictures
   );
-  const [writeup, setWriteup] = useState("");
   const NavigateTo = useNavigate();
 
   useEffect(() => {
@@ -193,6 +192,26 @@ function GlobalForm(props) {
               setInputs({});
             }
           }
+          if (props.type == "Blogs") {
+            console.log("inputs", inputs);
+            let answer;
+            answer = await postAxiosCall("/createBlog", {
+              ...inputs,
+              date: new Date().toISOString(),
+            });
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+            }
+          }
           break;
         case "Update":
           if (imageArray.length == 0 && imageClone.length == 0) {
@@ -241,6 +260,26 @@ function GlobalForm(props) {
               });
               setInputs({});
               NavigateTo("/updateEvents");
+            }
+          }
+          if (props.type == "Blogs") {
+            let answer = await updateAxiosCall(
+              "/updateBlog",
+              props?.record?.blog_id,
+              inputs
+            );
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+              NavigateTo("/updateBlogs");
             }
           }
           break;
@@ -321,6 +360,20 @@ function GlobalForm(props) {
           });
           setInputs();
           NavigateTo("/deleteStaff");
+        }
+        break;
+      case "Blogs":
+        answer = await deleteAxiosCall("/deleteBlog", props?.record?.blog_id);
+        if (answer) {
+          Swal.fire({
+            title: "Success",
+            text: answer?.message,
+            icon: "success",
+            confirmButtonText: "Great!",
+            allowOutsideClick: false,
+          });
+          setInputs();
+          NavigateTo("/deleteBlogs");
         }
         break;
       default:
@@ -636,16 +689,14 @@ function GlobalForm(props) {
                     <DatePicker
                       size="medium"
                       disabled={props?.pageMode === "Delete"}
-                      name="event_date"
+                      name="date"
                       value={
-                        inputs?.event_date
-                          ? dayjs(inputs.event_date, "YYYY-MM-DD")
-                          : null
+                        inputs?.date ? dayjs(inputs.date, "YYYY-MM-DD") : null
                       }
                       onChange={(date, dateString) => {
                         setInputs({
                           ...inputs,
-                          event_date: dateString,
+                          date: dateString,
                         });
                       }}
                     />
@@ -913,8 +964,11 @@ function GlobalForm(props) {
                 <ReactQuill
                   className="h-96 mb-4"
                   theme="snow"
-                  value={writeup}
-                  onChange={setWriteup}
+                  readOnly={props.pageMode === "Delete" ? true : false}
+                  value={inputs?.blog_content}
+                  onChange={(e) => {
+                    setInputs({ ...inputs, blog_content: e });
+                  }}
                 />
               </div>
               {/* Upload Pictures */}

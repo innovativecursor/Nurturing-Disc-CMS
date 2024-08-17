@@ -42,7 +42,7 @@ export const Menu = [
   },
   {
     text: "Edit Blogs",
-    link: "/editBlogs",
+    link: "/updateBlogs",
   },
   {
     text: "Delete Blogs",

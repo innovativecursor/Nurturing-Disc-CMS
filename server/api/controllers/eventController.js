@@ -1,13 +1,13 @@
 const Joi = require("joi");
 const cloudinary = require("../../utils/cloudinary");
 const Event = require("../models/event");
-const { formattedEventResults } = require("../utils/Consts");
+const { formattedDatePicResult } = require("../utils/Consts");
 
 // Joi validation schema
 const validateEvent = (event) => {
   const schema = Joi.object({
     event_name: Joi.string().required(),
-    event_date: Joi.date().iso().required(), // Validate ISO 8601 date format
+    date: Joi.date().iso().required(), // Validate ISO 8601 date format
     event_location: Joi.string().required(),
     event_description: Joi.string().required(),
     pictures: Joi.any().required(),
@@ -20,7 +20,7 @@ const validateEvent = (event) => {
 exports.getEvents = async (req, res) => {
   try {
     const events = await Event.findAll({});
-    const result = formattedEventResults(events);
+    const result = formattedDatePicResult(events);
     res.status(200).json(result);
   } catch (error) {
     res
@@ -41,18 +41,13 @@ exports.postEvents = async (req, res) => {
   }
 
   try {
-    const {
-      event_name,
-      event_date,
-      event_location,
-      event_description,
-      pictures,
-    } = req.body;
+    const { event_name, date, event_location, event_description, pictures } =
+      req.body;
 
     // Create the event in the database
     const event = await Event.create({
       event_name,
-      event_date,
+      date,
       event_location,
       event_description,
       pictures: [],

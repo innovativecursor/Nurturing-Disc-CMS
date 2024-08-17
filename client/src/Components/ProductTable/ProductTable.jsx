@@ -95,8 +95,8 @@ function ProductTable(props) {
     },
     {
       title: "Event Date",
-      dataIndex: "event_date",
-      key: "event_date",
+      dataIndex: "date",
+      key: "date",
     },
   ];
   const staff_col = [
@@ -111,6 +111,20 @@ function ProductTable(props) {
       title: "Staff Designation",
       dataIndex: "staff_position",
       key: "staff_position",
+    },
+  ];
+  const blog_col = [
+    {
+      title: "Blog Title",
+      dataIndex: "blog_title",
+      key: "blog_title",
+      fixed: "left",
+    },
+
+    {
+      title: "Blog Date",
+      dataIndex: "date",
+      key: "date",
     },
   ];
   const [result, setResult] = useState(null);
@@ -134,6 +148,10 @@ function ProductTable(props) {
         setResult(result.data);
       } else if (props?.type == "Staff") {
         const result = await getAxiosCall("/fetchStaff");
+        setResult(result.data);
+      } else if (props?.type == "Blogs") {
+        const result = await getAxiosCall("/fetchBlogs");
+
         setResult(result.data);
       } else {
         const result = await getAxiosCall("/fetchEvents");
@@ -208,7 +226,7 @@ function ProductTable(props) {
         );
       case "Staff":
         return (
-          <PageWrapper title={`${props.pageMode} Events`}>
+          <PageWrapper title={`${props.pageMode} Staff`}>
             <Table
               columns={staff_col}
               dataSource={result}
@@ -225,21 +243,19 @@ function ProductTable(props) {
             />
           </PageWrapper>
         );
-      default:
+      case "Blogs":
         return (
-          <PageWrapper title={`${props.pageMode} Products`}>
+          <PageWrapper title={`${props.pageMode} Blogs`}>
             <Table
-              columns={columns}
+              columns={blog_col}
               dataSource={result}
               size="large"
               onRow={(record) => ({
                 onClick: () => {
                   navigateTo(
-                    props.pageMode === "View"
-                      ? "/viewinner"
-                      : props.pageMode === "Delete"
-                      ? "/deleteinner"
-                      : "/updateinner",
+                    props.pageMode === "Delete"
+                      ? "/deleteBlogsinner"
+                      : "/updateBlogsinner",
                     { state: record }
                   );
                 },
@@ -248,6 +264,7 @@ function ProductTable(props) {
             />
           </PageWrapper>
         );
+      default:
     }
   };
 

@@ -7,20 +7,22 @@ exports.formattedResult = (result) => {
         url: image.url,
         secure_url: image.secure_url,
         public_id: image.public_id,
+        folder: image.folder,
       })),
     };
   });
   return cleanResult;
 };
-exports.formattedEventResults = (result) => {
+exports.formattedDatePicResult = (result) => {
   const cleanResult = result.map((el) => {
     return {
       ...el.toJSON(),
-      event_date: el.event_date.toISOString().split("T")[0],
+      date: el.date.toISOString().split("T")[0],
       pictures: el.pictures.map((image) => ({
         url: image.url,
         secure_url: image.secure_url,
         public_id: image.public_id,
+        folder: image.folder,
       })),
     };
   });

@@ -1,30 +1,26 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-const Event = sequelize.define("Event", {
-  event_id: {
+const Blog = sequelize.define("Blog", {
+  blog_id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
     allowNull: false,
   },
-  event_name: {
+  blog_title: {
     type: DataTypes.STRING,
+    allowNull: false,
+  },
+  blog_content: {
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-  event_location: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  event_description: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   pictures: { type: DataTypes.JSON, allowNull: false },
 });
 
-module.exports = Event;
+module.exports = Blog;
