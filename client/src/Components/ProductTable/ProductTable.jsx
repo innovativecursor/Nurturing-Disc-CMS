@@ -5,35 +5,6 @@ import { getAxiosCall, deleteAxiosCall } from "../../Axios/UniversalAxiosCalls";
 import { useNavigate } from "react-router-dom";
 
 function ProductTable(props) {
-  const columns = [
-    {
-      title: "Prd ID",
-      dataIndex: "prd_id",
-      key: "prd_id",
-      fixed: "left",
-    },
-    {
-      title: "Exhibition Name",
-      dataIndex: "product_name",
-      key: "product_name",
-    },
-    {
-      title: "Location",
-      dataIndex: "location",
-      key: "location",
-    },
-    {
-      title: "Booth Size",
-      dataIndex: "booth_size",
-      key: "booth_size",
-    },
-    {
-      title: "Budget",
-      dataIndex: "budget",
-      key: "budget",
-    },
-  ];
-
   const inquiry_columns = [
     {
       title: "Inquiry_ID",
@@ -127,20 +98,56 @@ function ProductTable(props) {
       key: "date",
     },
   ];
+  const user_col = [
+    {
+      title: "User Id",
+      dataIndex: "user_id",
+      key: "user_id",
+    },
+    {
+      title: "First Name",
+      dataIndex: "first_name",
+      key: "first_name",
+    },
+    {
+      title: "Last Name",
+      dataIndex: "last_name",
+      key: "last_name",
+    },
+    {
+      title: "Email Id",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Role Id",
+      dataIndex: "role_id",
+      key: "role_id",
+    },
+  ];
   const [result, setResult] = useState(null);
   const navigateTo = useNavigate();
 
   useEffect(() => {
-    if (!props.filteredProducts) {
-      answer();
-    } else {
-      setResult(props.filteredProducts);
-    }
-  }, [props]);
+    // if (!props.filteredProducts) {
+    //   answer();
+    // } else {
+    //   setResult(props.filteredProducts);
+    // }
+    answer();
+  }, []);
 
   const answer = async () => {
     try {
-      if (props.type === "Inquiries") {
+      if (props.type === "Users") {
+        const result = await getAxiosCall("/users");
+        setResult(result.data?.users);
+      } else if (props.type === "Inquiries") {
         const result = await getAxiosCall("/fetchInquiries");
         setResult(result.data);
       } else if (props.type == "Testimonials") {
@@ -151,7 +158,6 @@ function ProductTable(props) {
         setResult(result.data);
       } else if (props?.type == "Blogs") {
         const result = await getAxiosCall("/fetchBlogs");
-
         setResult(result.data);
       } else {
         const result = await getAxiosCall("/fetchEvents");
@@ -260,6 +266,17 @@ function ProductTable(props) {
                   );
                 },
               })}
+              scroll={{ x: 1000, y: 1500 }}
+            />
+          </PageWrapper>
+        );
+      case "Users":
+        return (
+          <PageWrapper title={`${props.pageMode} Users`}>
+            <Table
+              columns={user_col}
+              dataSource={result}
+              size="large"
               scroll={{ x: 1000, y: 1500 }}
             />
           </PageWrapper>

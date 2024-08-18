@@ -6,46 +6,9 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { getAxiosCall } from "../../Axios/UniversalAxiosCalls";
 import PageWrapper from "../PageContainer/PageWrapper";
+import ProductTable from "../ProductTable/ProductTable";
 function Home(props) {
-  const columns = [
-    {
-      title: "User Id",
-      dataIndex: "user_id",
-      key: "user_id",
-    },
-    {
-      title: "First Name",
-      dataIndex: "first_name",
-      key: "first_name",
-    },
-    {
-      title: "Last Name",
-      dataIndex: "last_name",
-      key: "last_name",
-    },
-    {
-      title: "Email Id",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Role Id",
-      dataIndex: "role_id",
-      key: "role_id",
-    },
-  ];
-  const [results, setResults] = useState("");
   const navigateTo = useNavigate();
-  const fetchRes = async () => {
-    const res = await getAxiosCall("/users");
-
-    setResults(res.data?.users);
-  };
   const logOut = async () => {
     window.localStorage.clear();
     localStorage.removeItem("access_token");
@@ -67,26 +30,7 @@ function Home(props) {
           Log out
         </Button>
       </div>
-      <div className="flex justify-center items-center">
-        <Button type="primary" onClick={fetchRes} className="text-black">
-          Click to Check Users
-        </Button>
-      </div>
-      <PageWrapper>
-        <Table
-          columns={columns}
-          dataSource={results}
-          size="large"
-          style={{
-            width: "100rem",
-          }}
-
-          // scroll={{
-          //   x: 1500,
-          //   y: 1000,
-          // }}
-        />
-      </PageWrapper>
+      <ProductTable pageMode="View" type="Users" />
     </div>
   );
 }

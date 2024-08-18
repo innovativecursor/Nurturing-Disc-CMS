@@ -13,6 +13,7 @@
    "dependencies": {
       "antd": "^5.9.0",
       "axios": "^1.5.0",
+      "chart.js": "^4.4.3",
       "crypto-js": "^4.1.1",
       "date-fns": "^3.6.0",
       "dayjs": "^1.11.12",
