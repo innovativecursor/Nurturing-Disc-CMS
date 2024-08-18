@@ -193,7 +193,6 @@ function GlobalForm(props) {
             }
           }
           if (props.type == "Blogs") {
-            console.log("inputs", inputs);
             let answer;
             answer = await postAxiosCall("/createBlog", {
               ...inputs,

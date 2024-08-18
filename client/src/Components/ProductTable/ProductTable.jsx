@@ -134,11 +134,6 @@ function ProductTable(props) {
   const navigateTo = useNavigate();
 
   useEffect(() => {
-    // if (!props.filteredProducts) {
-    //   answer();
-    // } else {
-    //   setResult(props.filteredProducts);
-    // }
     answer();
   }, []);
 

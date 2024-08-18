@@ -33,7 +33,6 @@ exports.updateGallery = async (req, res) => {
     const { pictures } = req.body;
 
     const folderName = `${process.env.CLOUDINARY_DB}/Gallery`;
-    console.log("req.body", req.body);
     // Upload pictures to Cloudinary
     const uploadPromises = pictures?.map((base64Data) => {
       return cloudinary.uploader.upload(base64Data, {

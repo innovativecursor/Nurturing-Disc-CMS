@@ -1,12 +1,13 @@
 import { Button, Table } from "antd";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { getAxiosCall } from "../../Axios/UniversalAxiosCalls";
 import PageWrapper from "../PageContainer/PageWrapper";
 import ProductTable from "../ProductTable/ProductTable";
+
 function Home(props) {
   const navigateTo = useNavigate();
   const logOut = async () => {
@@ -24,7 +25,6 @@ function Home(props) {
           {props.userDetails?.lastName}
         </h1>
       </div>
-
       <div className="flex justify-center items-center">
         <Button type="primary" onClick={logOut} className="text-black">
           Log out
