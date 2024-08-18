@@ -702,22 +702,24 @@ function GlobalForm(props) {
                     />
                   </Space>
                 </div>
-                <div className="my-5">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Description
-                  </label>
-                  <TextArea
-                    disabled={props?.pageMode === "Delete" ? true : false}
-                    type="text"
-                    id="event_description"
-                    name="event_description"
-                    className="mt-1 p-2 block w-full border rounded-md"
-                    onChange={(e) => {
-                      setInputs({ ...inputs, [e.target.name]: e.target.value });
-                    }}
-                    value={inputs?.event_description}
-                  />
-                </div>
+              </div>
+              <div className="my-5">
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <TextArea
+                  disabled={props?.pageMode === "Delete" ? true : false}
+                  type="text"
+                  size="large"
+                  required
+                  id="event_description"
+                  name="event_description"
+                  className="mt-1 p-2 !h-96 block w-full border rounded-md"
+                  onChange={(e) => {
+                    setInputs({ ...inputs, [e.target.name]: e.target.value });
+                  }}
+                  value={inputs?.event_description}
+                />
               </div>
               {/* Upload Pictures */}
               {props.pageMode === "Add" || props.pageMode === "Update" ? (
