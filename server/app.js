@@ -17,11 +17,10 @@ const options = {
   origin: [
     "http://localhost:3000",
     "http://localhost:3001",
-    "http://admin.thepropshopworldwide.com",
     "http://localhost:8080",
   ],
 };
-app.use(cors(options));
+app.use(cors());
 app.use(
   bodyParser.urlencoded({
     extended: false,
