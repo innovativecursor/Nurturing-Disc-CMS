@@ -43,7 +43,7 @@ exports.createInquiry = async (req, res) => {
     const mailOptions = {
       to: process.env.EMAIL,
       from: email,
-      subject: "Inquiry Via Proposhop International Website",
+      subject: "Enrollment Form Inquiry",
       text: `
             You have received a new inquiry from the Proposhop International website.
 

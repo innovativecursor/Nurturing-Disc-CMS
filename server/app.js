@@ -22,7 +22,7 @@ const options = {
     "http://localhost:8080",
   ],
 };
-app.use(cors(options));
+app.use(cors());
 
 // Platform-specific log directory
 const logDirectory =
@@ -60,7 +60,7 @@ app.use("/", routes);
 
 (async () => {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: true });
     console.log("Database synchronized");
   } catch (error) {
     console.error("Unable to sync database:", error);

@@ -5,6 +5,7 @@ const userController = require("../controllers/userController");
 const eventController = require("../controllers/eventController");
 const galleryController = require("../controllers/galleryController");
 const inquiryController = require("../controllers/inquiryController");
+const enrollmentController = require("../controllers/enrollmentController");
 const testimonialController = require("../controllers/testimonialController");
 const staffController = require("../controllers/staffController");
 const blogController = require("../controllers/blogController");
@@ -30,7 +31,22 @@ router.delete(
   authenticateUser,
   galleryController.deleteGallery
 );
-
+// Enrollment Routes
+router.get(
+  "/fetchEnrollment",
+  authenticateUser,
+  enrollmentController.fetchEnrollments
+);
+router.post(
+  "/sendEnrollment",
+  //  apiLimiter,
+  enrollmentController.createEnrollments
+);
+router.delete(
+  "/deleteEnrollment/:id",
+  authenticateUser,
+  enrollmentController.deleteEnrollments
+);
 // Inquiry Routes
 router.get(
   "/fetchInquiries",
