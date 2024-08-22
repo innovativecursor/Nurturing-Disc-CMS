@@ -4,7 +4,8 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
   "nurturingdiscoveries",
   "root",
-  "Reggaeton@4166",
+  "root",
+  // "Reggaeton@4166",
   {
     dialect: "mysql", // or any other dialect
     host: "localhost", // or your database host
