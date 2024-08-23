@@ -16,10 +16,6 @@ const Enrollment = sequelize.define("Enrollment", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  enrollment_date: {
-    type: DataTypes.DATEONLY,
-    allowNull: false,
-  },
   enrollment_email_id: {
     type: DataTypes.STRING,
     allowNull: true,

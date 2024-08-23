@@ -8,7 +8,6 @@ const Joi = require("joi");
 const enrollmentSchema = Joi.object({
   enrollment_child_name: Joi.string().min(3).max(50).required(),
   enrollment_guardian_name: Joi.string().min(3).max(50).required(),
-  enrollment_date: Joi.string().required(),
   enrollment_email_id: Joi.string().email().optional(),
   enrollment_phNumber: Joi.string().min(10).max(15).required(),
   enrollment_message: Joi.string().min(5).max(1000).optional(),
@@ -30,15 +29,22 @@ exports.createEnrollments = async (req, res) => {
     const {
       enrollment_child_name,
       enrollment_guardian_name,
-      enrollment_date,
       enrollment_email_id,
       enrollment_phNumber,
       enrollment_message,
     } = req.body;
+    const checkDuplicateEnrollment = await Enrollment.findAll({
+      where: { enrollment_email_id },
+    });
+    if (checkDuplicateEnrollment.length != 0) {
+      return res.status(400).json({
+        message:
+          "Duplicate Entry. An Enrollment with this email already exists.",
+      });
+    }
     await Enrollment.create({
       enrollment_child_name,
       enrollment_guardian_name,
-      enrollment_date,
       enrollment_email_id,
       enrollment_phNumber,
       enrollment_message,

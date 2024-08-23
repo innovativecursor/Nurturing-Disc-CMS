@@ -26,6 +26,12 @@ exports.createInquiry = async (req, res) => {
   if (error) return res.status(400).json({ message: error.details[0].message });
   try {
     const { name, email, mobile_number, message } = req.body;
+    const checkDuplicateinquiry = await Inquiry.findAll({ where: { email } });
+    if (checkDuplicateinquiry.length != 0) {
+      return res.status(400).json({
+        message: "Duplicate Entry. An inquiry with this email already exists.",
+      });
+    }
     await Inquiry.create({
       name,
       email,
