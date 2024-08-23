@@ -28,6 +28,7 @@ import DeleteStaff from "../DeleteStaff/DeleteStaff";
 import AddBlogs from "../AddBlogs/AddBlogs";
 import DeleteBlogs from "../DeleteBlogs/DeleteBlogs";
 import UpdateBlogs from "../UpdateBlogs/UpdateBlogs";
+import Enrollments from "../Enrollments/Enrollments";
 
 function Navigation(props) {
   const location = useLocation();
@@ -60,6 +61,7 @@ function Navigation(props) {
             <Route element={<PrivateRoute />}>
               <Route path="/home" element={<Home />} />
               <Route path="/inquiries" element={<Inquiries />} />
+              <Route path="/enrollments" element={<Enrollments />} />
               <Route
                 path="/createTestimonials"
                 element={<CreateTestimonials />}

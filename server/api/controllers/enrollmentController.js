@@ -60,7 +60,7 @@ exports.createEnrollments = async (req, res) => {
     const mailOptions = {
       to: process.env.EMAIL,
       from: enrollment_email_id,
-      subject: "Enrollment Form Inquiry",
+      subject: "Inquiry from Enrollment Form ",
       text: `
             You have received a new inquiry from the Proposhop International website.
 

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, message } from "antd";
+import { Table, Button, message, Modal } from "antd";
 import PageWrapper from "../PageContainer/PageWrapper";
 import { getAxiosCall, deleteAxiosCall } from "../../Axios/UniversalAxiosCalls";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function ProductTable(props) {
+  const [openModal, setopenModal] = useState(false);
+  const [inqMessage, setInqMessage] = useState("");
+  const [EnrMessage, setEnrMessage] = useState("");
+
   const inquiry_columns = [
     {
       title: "Inquiry_ID",
@@ -32,11 +37,76 @@ function ProductTable(props) {
       dataIndex: "",
       key: "x",
       render: (text, record) => (
-        <Button onClick={() => deleteInquire(record.inquiry_id)}>Delete</Button>
+        <Button
+          onClick={() => {
+            setopenModal(true), setInqMessage(record?.message);
+          }}
+        >
+          View
+        </Button>
+      ),
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (text, record) => (
+        <Button onClick={() => deleteInquiry(record.inquiry_id)}>Delete</Button>
       ),
     },
   ];
-
+  const Enrollment_columns = [
+    {
+      title: "Enrollment ID",
+      dataIndex: "enrollment_id",
+      key: "enrollment_id",
+      fixed: "left",
+    },
+    {
+      title: "Child Name",
+      dataIndex: "enrollment_child_name",
+      key: "enrollment_child_name",
+    },
+    {
+      title: "Guardian Name",
+      dataIndex: "enrollment_guardian_name",
+      key: "enrollment_guardian_name",
+    },
+    {
+      title: "Email",
+      dataIndex: "enrollment_email_id",
+      key: "enrollment_email_id",
+    },
+    {
+      title: "Mobile Number",
+      dataIndex: "enrollment_phNumber",
+      key: "enrollment_phNumber",
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (text, record) => (
+        <Button
+          onClick={() => {
+            setopenModal(true), setEnrMessage(record?.enrollment_message);
+          }}
+        >
+          View
+        </Button>
+      ),
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "x",
+      render: (text, record) => (
+        <Button onClick={() => deleteEnrollment(record.enrollment_id)}>
+          Delete
+        </Button>
+      ),
+    },
+  ];
   const testimonials_col = [
     {
       title: "Testimonial Id",
@@ -145,6 +215,9 @@ function ProductTable(props) {
       } else if (props.type === "Inquiries") {
         const result = await getAxiosCall("/fetchInquiries");
         setResult(result.data);
+      } else if (props.type === "Enrollments") {
+        const result = await getAxiosCall("/fetchEnrollment");
+        setResult(result.data);
       } else if (props.type == "Testimonials") {
         const result = await getAxiosCall("/fetchTestimonials");
         setResult(result.data);
@@ -162,12 +235,45 @@ function ProductTable(props) {
       console.error("Error fetching data:", error);
     }
   };
-
-  const deleteInquire = async (id) => {
+  const deleteEnrollment = async (id) => {
     try {
-      const remove = await deleteAxiosCall("/deleteInquiry", id);
-      message.success("Inquiry deleted successfully");
-      answer(); // Refresh the data after deletion
+      Swal.fire({
+        title: "info",
+        text: "Are You Sure You want to Delete This Enrollment",
+        icon: "info",
+        confirmButtonText: "Delete",
+        showCancelButton: true,
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteAxiosCall("/deleteEnrollment", id);
+          message.success("Enrollment deleted successfully");
+          answer(); // Refresh the data after deletion
+          window.location.reload(true);
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting Enrollment:", error);
+      message.error("Failed to delete Enrollment");
+    }
+  };
+  const deleteInquiry = async (id) => {
+    try {
+      Swal.fire({
+        title: "info",
+        text: "Are You Sure You want to Delete This Inquiry",
+        icon: "info",
+        confirmButtonText: "Delete",
+        showCancelButton: true,
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteAxiosCall("/deleteInquiry", id);
+          message.success("Inquiry deleted successfully");
+          answer(); // Refresh the data after deletion
+          window.location.reload(true);
+        }
+      });
     } catch (error) {
       console.error("Error deleting inquiry:", error);
       message.error("Failed to delete inquiry");
@@ -197,17 +303,59 @@ function ProductTable(props) {
             />
           </PageWrapper>
         );
+      case "Enrollments":
+        return (
+          <>
+            <PageWrapper title={`${props.type}`}>
+              <Table
+                columns={Enrollment_columns}
+                dataSource={result}
+                size="large"
+                onRow={() => ({})}
+                scroll={{ x: 1000, y: 1500 }}
+              />
+            </PageWrapper>
+            <Modal
+              open={openModal}
+              title="Description"
+              centered
+              closeIcon
+              maskClosable={true} // Ensures that clicking outside closes the modal
+              closable={true} // Hides the "X" close button
+              footer={null}
+              destroyOnClose={true}
+              onCancel={() => setopenModal(false)} // Add this line to close the modal when clicking outside
+            >
+              <p>{EnrMessage}</p>
+            </Modal>
+          </>
+        );
       case "Inquiries":
         return (
-          <PageWrapper title={`${props.type}`}>
-            <Table
-              columns={inquiry_columns}
-              dataSource={result}
-              size="large"
-              onRow={() => ({})}
-              scroll={{ x: 1000, y: 1500 }}
-            />
-          </PageWrapper>
+          <>
+            <PageWrapper title={`${props.type}`}>
+              <Table
+                columns={inquiry_columns}
+                dataSource={result}
+                size="large"
+                onRow={() => ({})}
+                scroll={{ x: 1000, y: 1500 }}
+              />
+            </PageWrapper>
+            <Modal
+              open={openModal}
+              title="Description"
+              centered
+              closeIcon
+              maskClosable={true} // Ensures that clicking outside closes the modal
+              closable={true} // Hides the "X" close button
+              footer={null}
+              destroyOnClose={true}
+              onCancel={() => setopenModal(false)} // Add this line to close the modal when clicking outside
+            >
+              <p>{inqMessage}</p>
+            </Modal>
+          </>
         );
       case "Testimonials":
         return (

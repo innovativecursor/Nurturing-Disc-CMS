@@ -4,6 +4,10 @@ export const Menu = [
     link: "/inquiries",
   },
   {
+    text: "Enrollments",
+    link: "/enrollments",
+  },
+  {
     text: "Create Testimonials",
     link: "/createTestimonials",
   },

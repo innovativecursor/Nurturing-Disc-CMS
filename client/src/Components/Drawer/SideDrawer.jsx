@@ -24,7 +24,7 @@ function SideDrawer() {
         </div>
       </button>
       <Drawer
-        title="PropShop Worldwide Action Menu"
+        title="Nurturing Discoveries Action Menu"
         placement={placement}
         width={500}
         onClose={onClose}
