@@ -32,7 +32,7 @@ export default defineConfig({
   build: {
     minify: true,
     emptyOutDir: true,
-    sourcemap: "inline", // Disable source maps
+    sourcemap: false, // Disable source maps
     rollupOptions: {
       external: "sweetalert2.all.min.js",
       output: {
