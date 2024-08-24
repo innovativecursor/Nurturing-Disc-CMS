@@ -5,7 +5,7 @@ import { postAxiosCall } from "../../Axios/UniversalAxiosCalls";
 import { Button, Input } from "antd";
 import Swal from "sweetalert2";
 import logo from "../../assets/Images/Nurturing_Logo.svg";
-import background from "../../assets/Images/background.jpg";
+import background from "../../assets/Images/background.webp";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 function ResetPassword() {

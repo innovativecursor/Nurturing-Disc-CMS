@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { connect } from "react-redux";
 import CryptoJS from "crypto-js";
-import background from "../../assets/Images/background.jpg";
+import background from "../../assets/Images/background.webp";
 import logo from "../../assets/Images/Nurturing_Logo.svg";
 import { postAxiosCall } from "../../Axios/UniversalAxiosCalls";
 

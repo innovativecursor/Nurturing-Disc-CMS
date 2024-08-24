@@ -9,7 +9,7 @@ function Navbar(props) {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   return (
-    <nav className="bg-gray-500 p-4">
+    <nav className="bg-yellow-200 p-4">
       <div className="container mx-auto">
         <div className="flex justify-between items-center">
           {/* Logo or Brand Name */}
@@ -30,7 +30,7 @@ function Navbar(props) {
 
           {/* Mobile Menu Button (Hamburger) */}
           <div className="md:hidden">
-            <button onClick={toggleMobileMenu} className="text-white">
+            <button onClick={toggleMobileMenu} className="text-">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -51,19 +51,19 @@ function Navbar(props) {
           {/* Desktop Menu */}
 
           <ul className="hidden md:flex space-x-8 text-xl">
-            <div className="text-white">
+            <div className="text-black">
               <p className="font-semibold">
                 Hi, {props.userDetails?.firstName} {props.userDetails?.lastName}
               </p>
             </div>
             <li>
-              <NavLink to="/home" className="text-white">
+              <NavLink to="/home" className="font-semibold text-black">
                 Home
               </NavLink>
             </li>
 
             <li>
-              <NavLink to="/" className="text-white">
+              <NavLink to="/" className="font-semibold text-black">
                 Logout
               </NavLink>
             </li>
