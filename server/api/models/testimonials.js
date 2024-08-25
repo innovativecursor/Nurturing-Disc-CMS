@@ -11,7 +11,7 @@ const Testimonial = sequelize.define("Testimonial", {
     type: DataTypes.STRING,
   },
   review: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
   pictures: { type: DataTypes.JSON, allowNull: false },
