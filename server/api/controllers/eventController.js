@@ -44,6 +44,24 @@ exports.postEvents = async (req, res) => {
     const { event_name, date, event_location, event_description, pictures } =
       req.body;
 
+    const folderName = `${
+      process.env.CLOUDINARY_DB
+    }/event_${new Date().toISOString()}`;
+    // Upload pictures to Cloudinary
+    const uploadPromises = pictures?.map((base64Data) => {
+      return cloudinary.uploader.upload(base64Data, {
+        folder: folderName,
+      });
+    });
+
+    const uploadedImages = await Promise.all(uploadPromises);
+    // Check if any image upload failed
+    if (!uploadedImages || uploadedImages.length !== pictures.length) {
+      return res
+        .status(400)
+        .json({ message: "Failed to upload one or more images to Cloudinary" });
+    }
+
     // Create the event in the database
     const event = await Event.create({
       event_name,
@@ -53,20 +71,8 @@ exports.postEvents = async (req, res) => {
       pictures: [],
     });
 
-    const folderName = `${process.env.CLOUDINARY_DB}/event_${event.event_id}`;
-
-    // Upload pictures to Cloudinary
-    const uploadPromises = pictures?.map((base64Data) => {
-      return cloudinary.uploader.upload(base64Data, {
-        folder: folderName,
-      });
-    });
-
-    const uploadedImages = await Promise.all(uploadPromises);
-
     // Update the event with the uploaded images
     await event.update({ pictures: uploadedImages });
-
     res.status(201).json({ message: "Event created successfully", event });
   } catch (error) {
     res
@@ -78,16 +84,6 @@ exports.postEvents = async (req, res) => {
 // Update an existing event
 exports.updateEvents = async (req, res) => {
   const { id } = req.params;
-
-  // Validate the incoming request data
-  //   const { error } = validateEvent(req.body);
-  //   if (error) {
-  //     return res.status(400).json({
-  //       message: "Please Fill in all the Fields",
-  //       error: error.details[0].message,
-  //     });
-  //   }
-
   try {
     const updatedData = req.body;
 
@@ -96,7 +92,9 @@ exports.updateEvents = async (req, res) => {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const folderName = `${process.env.CLOUDINARY_DB}/event_${id}`;
+    const folderName = `${
+      process.env.CLOUDINARY_DB
+    }/event_${new Date().toISOString()}`;
 
     const cloudinaryFiles = await cloudinary.api.resources({
       type: "upload",
@@ -123,7 +121,6 @@ exports.updateEvents = async (req, res) => {
       );
 
     const uploadedImages = await Promise.all(uploadPromises);
-
     const allImages = [
       ...updatedData.pictures.filter((pic) => typeof pic !== "string"),
       ...uploadedImages,
@@ -152,25 +149,31 @@ exports.deleteEvents = async (req, res) => {
     }
 
     const { pictures } = event;
-    const folderName = pictures[0]?.folder;
+    // If there are pictures, proceed with deleting them from Cloudinary
+    if (pictures && pictures.length > 0) {
+      const folderName = pictures[0]?.folder;
 
-    const deletePromises = pictures.map((picture) =>
-      cloudinary.uploader.destroy(picture.public_id)
-    );
-    await Promise.all(deletePromises);
+      // Delete all pictures associated with the staff member
+      const deletePromises = pictures.map((picture) =>
+        cloudinary.uploader.destroy(picture.public_id)
+      );
+      await Promise.all(deletePromises);
 
-    const filesInFolder = await cloudinary.api.resources({
-      type: "upload",
-      prefix: folderName,
-    });
+      // Check if there are any remaining files in the folder and delete them
+      const filesInFolder = await cloudinary.api.resources({
+        type: "upload",
+        prefix: folderName,
+      });
 
-    const deleteFilePromises = filesInFolder.resources.map((file) =>
-      cloudinary.uploader.destroy(file.public_id)
-    );
+      const deleteFilePromises = filesInFolder.resources.map((file) =>
+        cloudinary.uploader.destroy(file.public_id)
+      );
 
-    await Promise.all(deleteFilePromises);
+      await Promise.all(deleteFilePromises);
 
-    await cloudinary.api.delete_folder(folderName);
+      // Finally, delete the folder itself
+      await cloudinary.api.delete_folder(folderName);
+    }
     await event.destroy();
 
     res.status(200).json({ message: "Event deleted successfully" });

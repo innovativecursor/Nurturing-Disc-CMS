@@ -40,15 +40,9 @@ exports.postBlogs = async (req, res) => {
   }
   try {
     const { blog_title, blog_content, date, pictures } = req.body;
-    // Create the blog in the database
-    const blog = await Blog.create({
-      blog_title,
-      blog_content,
-      date,
-      pictures: [],
-    });
-
-    const folderName = `${process.env.CLOUDINARY_DB}/blog_${blog.blog_id}`;
+    const folderName = `${
+      process.env.CLOUDINARY_DB
+    }/blog_${new Date().toISOString()}`;
 
     // Upload pictures to Cloudinary
     const uploadPromises = req.body?.pictures?.map((base64Data) => {
@@ -58,7 +52,19 @@ exports.postBlogs = async (req, res) => {
     });
 
     const uploadedImages = await Promise.all(uploadPromises);
-
+    // Check if any image upload failed
+    if (!uploadedImages || uploadedImages.length !== pictures.length) {
+      return res
+        .status(400)
+        .json({ message: "Failed to upload one or more images to Cloudinary" });
+    }
+    // Create the blog in the database
+    const blog = await Blog.create({
+      blog_title,
+      blog_content,
+      date,
+      pictures: [],
+    });
     // Update the blog with the uploaded images
     await blog.update({ pictures: uploadedImages });
 
@@ -185,25 +191,31 @@ exports.deleteBlogs = async (req, res) => {
     }
 
     const { pictures } = blog;
-    const folderName = pictures[0]?.folder;
+    // If there are pictures, proceed with deleting them from Cloudinary
+    if (pictures && pictures.length > 0) {
+      const folderName = pictures[0]?.folder;
 
-    const deletePromises = pictures.map((picture) =>
-      cloudinary.uploader.destroy(picture.public_id)
-    );
-    await Promise.all(deletePromises);
+      // Delete all pictures associated with the staff member
+      const deletePromises = pictures.map((picture) =>
+        cloudinary.uploader.destroy(picture.public_id)
+      );
+      await Promise.all(deletePromises);
 
-    const filesInFolder = await cloudinary.api.resources({
-      type: "upload",
-      prefix: folderName,
-    });
+      // Check if there are any remaining files in the folder and delete them
+      const filesInFolder = await cloudinary.api.resources({
+        type: "upload",
+        prefix: folderName,
+      });
 
-    const deleteFilePromises = filesInFolder.resources.map((file) =>
-      cloudinary.uploader.destroy(file.public_id)
-    );
+      const deleteFilePromises = filesInFolder.resources.map((file) =>
+        cloudinary.uploader.destroy(file.public_id)
+      );
 
-    await Promise.all(deleteFilePromises);
+      await Promise.all(deleteFilePromises);
 
-    await cloudinary.api.delete_folder(folderName);
+      // Finally, delete the folder itself
+      await cloudinary.api.delete_folder(folderName);
+    }
     await blog.destroy();
 
     res.status(200).json({ message: "Blog deleted successfully" });

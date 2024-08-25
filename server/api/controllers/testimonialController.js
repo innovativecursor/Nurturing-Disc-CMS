@@ -25,14 +25,11 @@ exports.createTestimonial = async (req, res) => {
   }
   try {
     const { company_name, reviewer_name, review, pictures } = req.body;
-    const creation = await Testimonial.create({
-      company_name,
-      reviewer_name,
-      review,
-      pictures: [],
-    });
+
     // Generate a unique folder name using the testimonial
-    const folderName = `${process.env.CLOUDINARY_DB}/testimonial${creation.testimonial_id}`;
+    const folderName = `${
+      process.env.CLOUDINARY_DB
+    }/testimonial${new Date().toISOString()}`;
 
     // Upload pictures to Cloudinary
     const uploadPromises = pictures?.map((base64Data) => {
@@ -40,9 +37,21 @@ exports.createTestimonial = async (req, res) => {
         folder: folderName, // Specify the folder for uploaded images
       });
     });
-
     const uploadedImages = await Promise.all(uploadPromises);
+    // Check if any image upload failed
+    if (!uploadedImages || uploadedImages.length !== pictures.length) {
+      return res
+        .status(400)
+        .json({ message: "Failed to upload one or more images to Cloudinary" });
+    }
 
+    // Creating a Testimonial
+    const creation = await Testimonial.create({
+      company_name,
+      reviewer_name,
+      review,
+      pictures: [],
+    });
     // Update the testimonial with the uploaded images
     await creation.update({ pictures: uploadedImages });
     res.status(200).json({ message: "Created Testimonial Successfully" });
@@ -63,34 +72,31 @@ exports.deleteTestimonial = async (req, res) => {
 
     // Extract the pictures array from the testimonial
     const { pictures } = testimonial;
-    // Extract the folder name from the first picture URL (assuming they all belong to the same folder)
-    const folderName = pictures[0].folder;
-    // Create a list of promises to delete each image from Cloudinary
-    const deletePromises = pictures.map((picture) => {
-      // Extract the public_id from the picture URL
-      const publicId = picture.public_id;
-      return cloudinary.uploader.destroy(publicId);
-    });
+    // If there are pictures, proceed with deleting them from Cloudinary
+    if (pictures && pictures.length > 0) {
+      const folderName = pictures[0]?.folder;
 
-    // Wait for all images to be deleted from Cloudinary
-    await Promise.all(deletePromises);
+      // Delete all pictures associated with the staff member
+      const deletePromises = pictures.map((picture) =>
+        cloudinary.uploader.destroy(picture.public_id)
+      );
+      await Promise.all(deletePromises);
 
-    // Get a list of all files within the folder
-    const filesInFolder = await cloudinary.api.resources({
-      type: "upload",
-      prefix: folderName,
-    });
+      // Check if there are any remaining files in the folder and delete them
+      const filesInFolder = await cloudinary.api.resources({
+        type: "upload",
+        prefix: folderName,
+      });
 
-    // Create a list of promises to delete each file within the folder
-    const deleteFilePromises = filesInFolder.resources.map((file) => {
-      return cloudinary.uploader.destroy(file.public_id);
-    });
+      const deleteFilePromises = filesInFolder.resources.map((file) =>
+        cloudinary.uploader.destroy(file.public_id)
+      );
 
-    // Wait for all files to be deleted from Cloudinary
-    await Promise.all(deleteFilePromises);
+      await Promise.all(deleteFilePromises);
 
-    // Delete the folder in Cloudinary
-    await cloudinary.api.delete_folder(folderName);
+      // Finally, delete the folder itself
+      await cloudinary.api.delete_folder(folderName);
+    }
 
     // Delete the testimonial from the database
     await testimonial.destroy();
