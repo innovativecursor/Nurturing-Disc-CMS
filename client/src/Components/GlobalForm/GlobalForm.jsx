@@ -845,6 +845,22 @@ function GlobalForm(props) {
                     value={inputs?.staff_position}
                   />
                 </div>
+                <div className="flex flex-row items-center gap-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Show on Landing Page?
+                  </label>
+                  <Checkbox
+                    name="staff_featured"
+                    disabled={props?.pageMode === "Delete"}
+                    checked={inputs?.staff_featured}
+                    onChange={() => {
+                      setInputs({
+                        ...inputs,
+                        staff_featured: !inputs?.staff_featured,
+                      });
+                    }}
+                  />
+                </div>
               </div>
               {/* Upload Pictures */}
               {props.pageMode === "Add" || props.pageMode === "Update" ? (

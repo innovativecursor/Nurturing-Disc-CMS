@@ -8,6 +8,7 @@ const validateStaff = (staff) => {
   const schema = Joi.object({
     staff_name: Joi.string().required(),
     staff_position: Joi.string().required(),
+    staff_featured: Joi.boolean().optional(),
     pictures: Joi.any().required(),
   });
   return schema.validate(staff);
@@ -37,12 +38,13 @@ exports.postStaff = async (req, res) => {
   }
 
   try {
-    const { staff_name, staff_position, pictures } = req.body;
+    const { staff_name, staff_position, staff_featured, pictures } = req.body;
 
     // Create the event in the database
     const staff = await Staff.create({
       staff_name,
       staff_position,
+      staff_featured,
       pictures: [],
     });
 
