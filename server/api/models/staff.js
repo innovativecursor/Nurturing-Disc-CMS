@@ -18,7 +18,7 @@ const Staff = sequelize.define(
     },
     staff_featured: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
     },
     staff_position: {
       type: DataTypes.STRING,

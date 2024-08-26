@@ -1,7 +1,8 @@
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
-  "http://admin.thepropshopworldwide.com",
+  "https://admin.nurturingdiscoveries.in",
+  "https://www.admin.nurturingdiscoveries.in",
 ];
 
 const refererCheck = (req, res, next) => {

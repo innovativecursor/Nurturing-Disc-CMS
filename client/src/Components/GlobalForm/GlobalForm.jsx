@@ -40,6 +40,7 @@ function GlobalForm(props) {
   const [company_testimonialImage, setCompany_testimonialImage] = useState(
     props?.record?.pictures
   );
+  const [check, setcheck] = useState(false);
   const NavigateTo = useNavigate();
 
   useEffect(() => {
@@ -178,7 +179,10 @@ function GlobalForm(props) {
           }
           if (props.type == "Staff") {
             let answer;
-            answer = await postAxiosCall("/createStaff", inputs);
+            answer = await postAxiosCall("/createStaff", {
+              ...inputs,
+              staff_featured: check,
+            });
             if (answer) {
               Swal.fire({
                 title: "Success",
@@ -854,10 +858,11 @@ function GlobalForm(props) {
                     disabled={props?.pageMode === "Delete"}
                     checked={inputs?.staff_featured}
                     onChange={() => {
-                      setInputs({
-                        ...inputs,
-                        staff_featured: !inputs?.staff_featured,
-                      });
+                      setcheck(!check),
+                        setInputs({
+                          ...inputs,
+                          staff_featured: !inputs?.staff_featured,
+                        });
                     }}
                   />
                 </div>

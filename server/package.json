@@ -1,14 +1,14 @@
 {
-  "name": "propshop-backend",
+  "name": "nurturing-backend",
   "version": "1.0.0",
-  "description": "A backend app for propshop worldwide",
+  "description": "A backend app for nurturing discoveries",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.comInnovativeCursor/thePropShopCMS.git"
+    "url": "git+https://github.comInnovativeCursor/Nurturing-Disc-CMS.git"
   },
   "keywords": [
     "node",
@@ -18,9 +18,9 @@
   "author": "Shawn Almeida",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.comInnovativeCursor/thePropShopCMS/issues"
+    "url": "https://github.comInnovativeCursor/Nurturing-Disc-CMS/issues"
   },
-  "homepage": "https://github.comInnovativeCursor/thePropShopCMS#readme",
+  "homepage": "https://github.comInnovativeCursor/Nurturing-Disc-CMS#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
