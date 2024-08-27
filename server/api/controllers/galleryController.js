@@ -1,26 +1,31 @@
 // controllers/userController.js
 
 const cloudinary = require("../../utils/cloudinary");
-
 exports.getGallery = async (req, res) => {
   try {
     const folderName = `${process.env.CLOUDINARY_DB}/Gallery`;
 
     // Fetch all images from the specified folder in Cloudinary
-    let allImages = [];
-    let nextCursor = null;
     const result = await cloudinary.api.resources({
       type: "upload",
       prefix: folderName,
       max_results: 500, // Adjust as needed
-      next_cursor: nextCursor,
     });
-    // Format the fetched images to include only 'url', 'secure_url', and 'public_id'
-    const formattedImages = result?.resources?.map((image) => ({
-      url: image.url,
-      secure_url: image.secure_url,
-      public_id: image.public_id,
-    }));
+
+    // Format the fetched images to include transformed 'secure_url'
+    const formattedImages = result.resources.map((image) => {
+      return {
+        public_id: image.public_id,
+        url: image.url,
+        // Apply transformations for compression and optimization
+        secure_url: cloudinary.url(image.public_id, {
+          transformation: [
+            { width: 800, height: 600, crop: "limit", quality: "auto:good" },
+          ],
+        }),
+      };
+    });
+
     res.status(200).json(formattedImages);
   } catch (error) {
     res
@@ -28,6 +33,33 @@ exports.getGallery = async (req, res) => {
       .json({ message: "Failed to fetch Images", error: error.message });
   }
 };
+
+// exports.getGallery = async (req, res) => {
+//   try {
+//     const folderName = `${process.env.CLOUDINARY_DB}/Gallery`;
+
+//     // Fetch all images from the specified folder in Cloudinary
+//     let allImages = [];
+//     let nextCursor = null;
+//     const result = await cloudinary.api.resources({
+//       type: "upload",
+//       prefix: folderName,
+//       max_results: 500, // Adjust as needed
+//       next_cursor: nextCursor,
+//     });
+//     // Format the fetched images to include only 'url', 'secure_url', and 'public_id'
+//     const formattedImages = result?.resources?.map((image) => ({
+//       url: image.url,
+//       secure_url: image.secure_url,
+//       public_id: image.public_id,
+//     }));
+//     res.status(200).json(formattedImages);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Failed to fetch Images", error: error.message });
+//   }
+// };
 exports.updateGallery = async (req, res) => {
   try {
     const { pictures } = req.body;
@@ -40,7 +72,7 @@ exports.updateGallery = async (req, res) => {
       });
     });
 
-    const uploadedImages = await Promise.all(uploadPromises);
+    await Promise.all(uploadPromises);
     res.status(201).json({ message: "Image Pushed Successfully!" });
   } catch (error) {
     res

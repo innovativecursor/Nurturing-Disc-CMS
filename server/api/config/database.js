@@ -5,7 +5,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize(
   "nurturingdiscoveries",
   "root",
-  process.env.NODE_ENV == "development" ? "root" : "Reggaeton@4166",
+  process.env.NODE_ENV == "development" ? "root" : "theWeekend@4166",
   {
     dialect: "mysql", // or any other dialect
     host: "localhost", // or your database host
