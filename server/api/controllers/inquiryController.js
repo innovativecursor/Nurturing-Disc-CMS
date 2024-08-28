@@ -51,7 +51,7 @@ exports.createInquiry = async (req, res) => {
       from: email,
       subject: "Enrollment Form Inquiry",
       text: `
-            You have received a new inquiry from the Proposhop International website.
+            You have received a new inquiry from your website.
 
             Details:
             Name: ${name}

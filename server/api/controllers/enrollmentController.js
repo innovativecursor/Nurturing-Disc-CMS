@@ -62,7 +62,7 @@ exports.createEnrollments = async (req, res) => {
       from: enrollment_email_id,
       subject: "Inquiry from Enrollment Form ",
       text: `
-            You have received a new inquiry from the Proposhop International website.
+            You have received a new Enrollment from your website.
 
             Details:
             Name: ${enrollment_guardian_name}

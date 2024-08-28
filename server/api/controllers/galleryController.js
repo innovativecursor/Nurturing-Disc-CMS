@@ -13,14 +13,20 @@ exports.getGallery = async (req, res) => {
     });
 
     // Format the fetched images to include transformed 'secure_url'
-    const formattedImages = result.resources.map((image) => {
+    const formattedImages = result?.resources?.map((image) => {
       return {
-        public_id: image.public_id,
-        url: image.url,
-        // Apply transformations for compression and optimization
-        secure_url: cloudinary.url(image.public_id, {
+        public_id: image?.public_id,
+        url: cloudinary.url(image?.public_id, {
           transformation: [
-            { width: 800, height: 600, crop: "limit", quality: "auto:good" },
+            { width: 800, height: 600, crop: "limit", quality: "auto" },
+            { fetch_format: "webp" }, // Convert to WebP format
+          ],
+        }),
+        // Apply transformations for WebP format, compression, and optimization
+        secure_url: cloudinary.url(image?.public_id, {
+          transformation: [
+            { width: 800, height: 600, crop: "limit", quality: "auto" },
+            { fetch_format: "webp" }, // Convert to WebP format
           ],
         }),
       };

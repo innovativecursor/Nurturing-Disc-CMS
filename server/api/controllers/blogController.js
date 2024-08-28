@@ -20,6 +20,20 @@ exports.getBlogs = async (req, res) => {
   try {
     const blog = await Blog.findAll({});
     const result = formattedDatePicResult(blog);
+    // Format the fetched images to include transformed 'secure_url'
+    result?.map((image) => {
+      return {
+        ...result,
+        url: cloudinary.url(image?.public_id, {
+          transformation: [
+            { width: 100, height: 100, crop: "limit", quality: "auto" },
+            { fetch_format: "webp" }, // Convert to WebP format
+          ],
+        }),
+      };
+    });
+    console.log("result", result);
+    // res.status(200).json(formattedImages);
     res.status(200).json(result);
   } catch (error) {
     res
