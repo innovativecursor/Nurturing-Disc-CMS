@@ -7,9 +7,9 @@ const Joi = require("joi");
 // Validations using JOI
 const inquirySchema = Joi.object({
   name: Joi.string().min(3).max(50).required(),
-  email: Joi.string().email().optional(),
+  email: Joi.string().email().allow("").optional(),
   mobile_number: Joi.string().min(10).max(15).required(),
-  message: Joi.string().min(5).max(1000).optional(),
+  message: Joi.string().min(5).max(1000).allow("").optional(),
 });
 exports.fetchInquiries = async (req, res) => {
   try {
