@@ -249,7 +249,9 @@ function ProductTable(props) {
           deleteAxiosCall("/deleteEnrollment", id);
           message.success("Enrollment deleted successfully");
           answer(); // Refresh the data after deletion
-          window.location.reload(true);
+          setTimeout(() => {
+            window.location.reload(true);
+          }, 1000);
         }
       });
     } catch (error) {
@@ -271,7 +273,9 @@ function ProductTable(props) {
           deleteAxiosCall("/deleteInquiry", id);
           message.success("Inquiry deleted successfully");
           answer(); // Refresh the data after deletion
-          window.location.reload(true);
+          setTimeout(() => {
+            window.location.reload(true);
+          }, 1000);
         }
       });
     } catch (error) {
