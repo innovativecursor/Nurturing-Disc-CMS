@@ -7,7 +7,7 @@ const { formattedResult } = require("../utils/Consts");
 const testimonialSchema = Joi.object({
   reviewer_name: Joi.string().allow(null, ""), // Allows empty strings or null values
   review: Joi.string().required(),
-  pictures: Joi.array().items(Joi.string().uri()).required(), // Assuming pictures are an array of URLs
+  pictures: Joi.array().items(Joi.string().uri()).default([]).optional(), // Assuming pictures are an array of URLs
 });
 exports.getTestimonials = async (req, res) => {
   const testimonialsFetched = await Testimonial.findAll({});
@@ -30,30 +30,41 @@ exports.createTestimonial = async (req, res) => {
     const folderName = `${
       process.env.CLOUDINARY_DB
     }/testimonial${new Date().toISOString()}`;
-
-    // Upload pictures to Cloudinary
-    const uploadPromises = pictures?.map((base64Data) => {
-      return cloudinary.uploader.upload(base64Data, {
-        folder: folderName, // Specify the folder for uploaded images
+    // If the pictures are not uploaded by the client
+    if (pictures?.length != 0) {
+      // Upload pictures to Cloudinary
+      const uploadPromises = pictures?.map((base64Data) => {
+        return cloudinary.uploader.upload(base64Data, {
+          folder: folderName, // Specify the folder for uploaded images
+        });
       });
-    });
-    const uploadedImages = await Promise.all(uploadPromises);
-    // Check if any image upload failed
-    if (!uploadedImages || uploadedImages.length !== pictures.length) {
-      return res
-        .status(400)
-        .json({ message: "Failed to upload one or more images to Cloudinary" });
-    }
+      const uploadedImages = await Promise.all(uploadPromises);
+      // Check if any image upload failed
+      if (!uploadedImages || uploadedImages.length !== pictures.length) {
+        return res.status(400).json({
+          message: "Failed to upload one or more images to Cloudinary",
+        });
+      }
 
-    // Creating a Testimonial
-    const creation = await Testimonial.create({
-      company_name,
-      reviewer_name,
-      review,
-      pictures: [],
-    });
+      // Creating a Testimonial
+      const creation = await Testimonial.create({
+        company_name,
+        reviewer_name,
+        review,
+        pictures: [],
+      });
+      // Update the testimonial with the uploaded images
+      await creation.update({ pictures: uploadedImages });
+    } else {
+      // Creating a Testimonial
+      await Testimonial.create({
+        company_name,
+        reviewer_name,
+        review,
+        pictures: [],
+      });
+    }
     // Update the testimonial with the uploaded images
-    await creation.update({ pictures: uploadedImages });
     res.status(200).json({ message: "Created Testimonial Successfully" });
   } catch (error) {
     res

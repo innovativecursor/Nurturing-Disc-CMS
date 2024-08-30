@@ -16,9 +16,9 @@ exports.signup = async (req, res) => {
     if (findEmail) {
       return res.status(401).json({ message: "User already exists" });
     }
-    if (code !== 8050) {
-      return res.status(401).json({ message: "Unable to register!" });
-    }
+    // if (code !== 8050) {
+    //   return res.status(401).json({ message: "Unable to register!" });
+    // }
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 8);
     await User.create({

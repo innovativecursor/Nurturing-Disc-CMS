@@ -131,7 +131,7 @@ function GlobalForm(props) {
     try {
       switch (props.pageMode) {
         case "Add":
-          if (imageArray.length == 0) {
+          if (imageArray.length == 0 && props?.type !== "Testimonials") {
             Swal.fire({
               title: "error",
               text: "Add at least one Picture to proceed!",
@@ -139,14 +139,19 @@ function GlobalForm(props) {
               confirmButtonText: "Alright!",
               allowOutsideClick: false,
             });
-            return;
+            // Converting images to base64
+          } else {
+            await convertAllToBase64();
           }
-          // Converting images to base64
-          await convertAllToBase64();
 
-          if (props.type == "Testimonials") {
+          if (props.type === "Testimonials") {
+            let dummyinput = inputs;
+            if (inputs?.pictures?.length === 0 || !inputs?.pictures) {
+              dummyinput = { ...inputs, pictures: [] };
+            }
             let answer;
-            answer = await postAxiosCall("/createTestimonial", inputs);
+
+            answer = await postAxiosCall("/createTestimonial", dummyinput);
             if (answer) {
               Swal.fire({
                 title: "Success",
@@ -470,7 +475,7 @@ function GlobalForm(props) {
                     htmlFor="name"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Upload Company Profile Picture
+                    Upload Customer's Picture
                   </label>
                   <Upload
                     action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
@@ -502,7 +507,7 @@ function GlobalForm(props) {
                 ""
               )}
               {/* Pictures */}
-              {props?.pageMode !== "Add" ? (
+              {props.pageMode !== "Add" && inputs?.pictures?.length !== 0 ? (
                 <div className="my-5">
                   <label
                     htmlFor="name"

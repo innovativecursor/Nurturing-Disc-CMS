@@ -14,6 +14,6 @@ const Testimonial = sequelize.define("Testimonial", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  pictures: { type: DataTypes.JSON, allowNull: false },
+  pictures: { type: DataTypes.JSON, allowNull: true },
 });
 module.exports = Testimonial;
