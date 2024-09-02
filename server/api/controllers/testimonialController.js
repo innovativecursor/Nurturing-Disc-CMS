@@ -1,7 +1,7 @@
 const Testimonial = require("../models/testimonials");
 const cloudinary = require("../../utils/cloudinary");
 const Joi = require("joi");
-const { formattedResult } = require("../utils/Consts");
+const { formattedThumbnails } = require("../utils/Consts");
 
 // Define Joi schema
 const testimonialSchema = Joi.object({
@@ -10,9 +10,15 @@ const testimonialSchema = Joi.object({
   pictures: Joi.array().items(Joi.string().uri()).default([]).optional(), // Assuming pictures are an array of URLs
 });
 exports.getTestimonials = async (req, res) => {
-  const testimonialsFetched = await Testimonial.findAll({});
-  const result = formattedResult(testimonialsFetched);
-  res.status(200).json(result);
+  try {
+    const testimonialsFetched = await Testimonial.findAll({});
+    const result = formattedThumbnails(testimonialsFetched);
+    res.status(200).json(result);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch Testimonials", error: error.message });
+  }
 };
 exports.createTestimonial = async (req, res) => {
   // Validate request data against the schema
