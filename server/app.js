@@ -28,7 +28,7 @@ app.use(cors());
 // Platform-specific log directory
 const logDirectory =
   process.platform === "win32" || process.platform === "win64"
-    ? "C:\\Users\\Broccolli\\Documents\\NurturingDiscoveriesLogs"
+    ? "C:\\Users\\Public\\Documents\\NurturingDiscoveriesLogs"
     : "/var/www/";
 
 // Ensure the log directory exists

@@ -20,4 +20,9 @@ export const Menu = {
     { text: "Edit Blogs", link: "/updateBlogs" },
     { text: "Delete Blogs", link: "/deleteBlogs" },
   ],
+  Programs: [
+    { text: "Add Programs", link: "/createPrograms" },
+    { text: "Edit Programs", link: "/updatePrograms" },
+    { text: "Delete Programs", link: "/deletePrograms" },
+  ],
 };

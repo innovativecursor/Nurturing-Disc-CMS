@@ -25,32 +25,6 @@ function SideDrawer() {
           <FaArrowRight className="h-10 w-10" />
         </div>
       </button>
-      {/* <Drawer
-        title="Nurturing Discoveries Action Menu"
-        placement={placement}
-        width={500}
-        onClose={onClose}
-        open={open}
-        extra={
-          <Space>
-            <Button onClick={onClose}>Close Menu</Button>
-          </Space>
-        }
-      >
-        <ul>
-          {Menu.map((el) => {
-            return (
-              <li onClick={onClose}>
-                <NavLink to={el.link}>
-                  <div className="card hover:bg-blue-300 hover:text-white text-xl font-medium my-8">
-                    {el.text}
-                  </div>
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
-      </Drawer> */}
       <Drawer
         title="Nurturing Discoveries Action Menu"
         placement={placement}

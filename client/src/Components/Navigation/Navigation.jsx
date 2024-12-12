@@ -29,6 +29,9 @@ import AddBlogs from "../AddBlogs/AddBlogs";
 import DeleteBlogs from "../DeleteBlogs/DeleteBlogs";
 import UpdateBlogs from "../UpdateBlogs/UpdateBlogs";
 import Enrollments from "../Enrollments/Enrollments";
+import CreatePrograms from "../CreatePrograms/CreatePrograms";
+import UpdatePrograms from "../UpdatePrograms/UpdatePrograms";
+import DeletePrograms from "../DeletePrograms/DeletePrograms";
 
 function Navigation(props) {
   const location = useLocation();
@@ -96,6 +99,7 @@ function Navigation(props) {
                 element={<ProductTable pageMode="Delete" type="Events" />}
               />
               <Route path="/deleteEventsinner" element={<DeleteEvents />} />
+
               <Route path="/createBlogs" element={<AddBlogs />} />
               <Route
                 path="/updateBlogs"
@@ -117,6 +121,17 @@ function Navigation(props) {
                 pageMode="Delete"
                 element={<DeleteBlogs />}
               />
+              <Route path="/createPrograms" element={<CreatePrograms />} />
+              <Route
+                path="/updatePrograms"
+                element={<ProductTable pageMode="Update" type="Programs" />}
+              />
+              <Route path="/updatePrograminner" element={<UpdatePrograms />} />
+              <Route
+                path="/deletePrograms"
+                element={<ProductTable pageMode="Delete" type="Programs" />}
+              />
+              <Route path="/deletePrograminner" element={<DeletePrograms />} />
             </Route>
             <Route path="*" element={<Robots />} />
           </Routes>

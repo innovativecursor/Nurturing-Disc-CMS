@@ -200,6 +200,25 @@ function ProductTable(props) {
       key: "role_id",
     },
   ];
+  const prog_col = [
+    {
+      title: "Program Name",
+      dataIndex: "program_name",
+      key: "program_name",
+      fixed: "left",
+    },
+
+    {
+      title: "Minimum Age",
+      dataIndex: "min_age",
+      key: "min_age",
+    },
+    {
+      title: "Maximum Age",
+      dataIndex: "max_age",
+      key: "max_age",
+    },
+  ];
   const [result, setResult] = useState(null);
   const navigateTo = useNavigate();
 
@@ -209,27 +228,42 @@ function ProductTable(props) {
 
   const answer = async () => {
     try {
-      if (props.type === "Users") {
-        const result = await getAxiosCall("/users");
-        setResult(result.data?.users);
-      } else if (props.type === "Inquiries") {
-        const result = await getAxiosCall("/fetchInquiries");
-        setResult(result.data);
-      } else if (props.type === "Enrollments") {
-        const result = await getAxiosCall("/fetchEnrollment");
-        setResult(result.data);
-      } else if (props.type == "Testimonials") {
-        const result = await getAxiosCall("/fetchTestimonials");
-        setResult(result.data);
-      } else if (props?.type == "Staff") {
-        const result = await getAxiosCall("/fetchStaff");
-        setResult(result.data);
-      } else if (props?.type == "Blogs") {
-        const result = await getAxiosCall("/fetchBlogs");
-        setResult(result.data);
-      } else {
-        const result = await getAxiosCall("/fetchEvents");
-        setResult(result.data);
+      let result;
+      switch (props.type) {
+        case "Users":
+          result = await getAxiosCall("/users");
+          setResult(result?.data?.users);
+          break;
+        case "Inquiries":
+          result = await getAxiosCall("/fetchInquiries");
+          setResult(result?.data);
+          break;
+        case "Enrollments":
+          result = await getAxiosCall("/fetchEnrollment");
+          setResult(result?.data);
+          break;
+        case "Testimonials":
+          result = await getAxiosCall("/fetchTestimonials");
+          setResult(result?.data);
+          break;
+        case "Staff":
+          result = await getAxiosCall("/fetchStaff");
+          setResult(result?.data);
+          break;
+        case "Blogs":
+          result = await getAxiosCall("/fetchBlogs");
+          setResult(result?.data);
+          break;
+        case "Events":
+          result = await getAxiosCall("/fetchEvents");
+          setResult(result?.data);
+          break;
+        case "Programs":
+          result = await getAxiosCall("/fetchPrograms");
+          setResult(result?.data);
+          break;
+        default:
+          break;
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -299,6 +333,27 @@ function ProductTable(props) {
                     props.pageMode === "Delete"
                       ? "/deleteEventsinner"
                       : "/updateEventsinner",
+                    { state: record }
+                  );
+                },
+              })}
+              scroll={{ x: 1000, y: 1500 }}
+            />
+          </PageWrapper>
+        );
+      case "Programs":
+        return (
+          <PageWrapper title={`${props.pageMode} Programs`}>
+            <Table
+              columns={prog_col}
+              dataSource={result}
+              size="large"
+              onRow={(record) => ({
+                onClick: () => {
+                  navigateTo(
+                    props.pageMode === "Delete"
+                      ? "/deletePrograminner"
+                      : "/updatePrograminner",
                     { state: record }
                   );
                 },

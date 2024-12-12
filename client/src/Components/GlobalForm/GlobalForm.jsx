@@ -182,6 +182,22 @@ function GlobalForm(props) {
               setInputs({});
             }
           }
+          if (props.type == "Programs") {
+            let answer;
+            answer = await postAxiosCall("/postProgram", inputs);
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+            }
+          }
           if (props.type == "Staff") {
             let answer;
             answer = await postAxiosCall("/createStaff", {
@@ -290,6 +306,26 @@ function GlobalForm(props) {
               NavigateTo("/updateBlogs");
             }
           }
+          if (props.type == "Programs") {
+            let answer = await updateAxiosCall(
+              "/updateProgram",
+              props?.record?.program_id,
+              inputs
+            );
+            if (answer) {
+              Swal.fire({
+                title: "Success",
+                text: answer?.message,
+                icon: "success",
+                confirmButtonText: "Great!",
+                allowOutsideClick: false,
+              }).then(() => {
+                window.location.reload(true);
+              });
+              setInputs({});
+              NavigateTo("/updatePrograms");
+            }
+          }
           break;
         case "Delete":
           Swal.fire({
@@ -382,6 +418,23 @@ function GlobalForm(props) {
           });
           setInputs();
           NavigateTo("/deleteBlogs");
+        }
+        break;
+      case "Programs":
+        answer = await deleteAxiosCall(
+          "/deleteProgram",
+          props?.record?.program_id
+        );
+        if (answer) {
+          Swal.fire({
+            title: "Success",
+            text: answer?.message,
+            icon: "success",
+            confirmButtonText: "Great!",
+            allowOutsideClick: false,
+          });
+          setInputs();
+          NavigateTo("/deletePrograms");
         }
         break;
       default:
@@ -964,7 +1017,7 @@ function GlobalForm(props) {
             </Form>
           </div>
         </PageWrapper>
-      ) : (
+      ) : props?.type == "Blogs" ? (
         <PageWrapper title={`${props?.pageMode} Blogs`}>
           <div className="container mx-auto p-4 text-xl">
             <Form onFinish={submitForm}>
@@ -1014,6 +1067,191 @@ function GlobalForm(props) {
                     name="productImages"
                     fileList={imageArray}
                     maxCount={1}
+                    onChange={(e) => {
+                      setImageArray(e.fileList);
+                    }}
+                    beforeUpload={beforeUpload} // Add the beforeUpload function
+                    accept=".png, .jpg, .jpeg, .webp" // Restrict file types for the file dialog
+                  >
+                    <div>
+                      <PlusOutlined />
+                      <div
+                        style={{
+                          marginTop: 8,
+                        }}
+                      >
+                        Upload
+                      </div>
+                    </div>
+                  </Upload>
+                </div>
+              ) : (
+                ""
+              )}
+              {/* Pictures */}
+              {props?.pageMode !== "Add" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Pictures
+                  </label>
+                  <div className="w-full flex flex-row">
+                    {imageClone?.map((el, index) => (
+                      <div className="card" key={index}>
+                        <div className="flex h-60 justify-center">
+                          <img
+                            src={el?.url}
+                            alt="asd4e"
+                            className="object-contain"
+                          />
+                        </div>
+                        {props.pageMode !== "View" &&
+                        props.pageMode !== "Delete" ? (
+                          <div className="flex flex-row justify-center items-end">
+                            <button
+                              className="my-4 text-black p-4 font-semibold bg-orange-400 hover:text-white rounded-lg"
+                              onClick={() => deleteModal(index)}
+                              type="button"
+                            >
+                              Delete Picture
+                            </button>
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                ""
+              )}
+              {props.pageMode === "View" ? (
+                ""
+              ) : (
+                <div className="acitonButtons w-full flex justify-center">
+                  <button
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white font-semibold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out items-center justify-center"
+                    type="submit"
+                  >
+                    {props.pageMode} Data
+                  </button>
+                </div>
+              )}
+            </Form>
+          </div>
+        </PageWrapper>
+      ) : (
+        <PageWrapper title={`${props?.pageMode} Programs`}>
+          <div className="container mx-auto p-4 text-xl">
+            <Form onFinish={submitForm}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Name of the Program
+                  </label>
+                  <Input
+                    name="program_name"
+                    required
+                    disabled={props?.pageMode === "Delete"}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, [e.target.name]: e.target.value });
+                    }}
+                    value={inputs?.program_name}
+                  />
+                </div>
+                <div className="flex gap-12">
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Min Age
+                    </label>
+                    <InputNumber
+                      name="min_age"
+                      required
+                      disabled={props?.pageMode === "Delete"}
+                      onChange={(e) => {
+                        setInputs({
+                          ...inputs,
+                          min_age: e,
+                        });
+                      }}
+                      value={inputs?.min_age}
+                    />
+                  </div>
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Max Age
+                    </label>
+                    <InputNumber
+                      name="max_age"
+                      min={0}
+                      max={100}
+                      required
+                      disabled={props?.pageMode === "Delete"}
+                      onChange={(e) => {
+                        setInputs({
+                          ...inputs,
+                          max_age: e,
+                        });
+                      }}
+                      value={inputs?.max_age}
+                    />
+                  </div>
+                </div>
+                <div className="">
+                  {/* <label className="block text-sm font-medium text-gray-700">
+                    Max Age
+                  </label>
+                  <InputNumber
+                    name="max_age"
+                    required
+                    disabled={props?.pageMode === "Delete"}
+                    onChange={(e) => {
+                      setInputs({ ...inputs, [e.target.name]: e.target.value });
+                    }}
+                    value={inputs?.max_age}
+                  /> */}
+                </div>
+              </div>
+              <div className="my-5">
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <TextArea
+                  disabled={props?.pageMode === "Delete" ? true : false}
+                  type="text"
+                  size="large"
+                  required
+                  id="program_description"
+                  name="program_description"
+                  className="mt-1 p-2 !h-96 block w-full border rounded-md"
+                  onChange={(e) => {
+                    setInputs({
+                      ...inputs,
+                      program_description: e.target.value,
+                    });
+                  }}
+                  value={inputs?.program_description}
+                />
+              </div>
+              {/* Upload Pictures */}
+              {props.pageMode === "Add" || props.pageMode === "Update" ? (
+                <div className="my-5">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Upload Pictures
+                  </label>
+                  <Upload
+                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                    listType="picture-card"
+                    multiple={false}
+                    name="productImages"
+                    fileList={imageArray}
+                    maxCount={4}
                     onChange={(e) => {
                       setImageArray(e.fileList);
                     }}

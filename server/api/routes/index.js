@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 const eventController = require("../controllers/eventController");
+const ProgramController = require("../controllers/programController");
 const galleryController = require("../controllers/galleryController");
 const inquiryController = require("../controllers/inquiryController");
 const enrollmentController = require("../controllers/enrollmentController");
@@ -98,3 +99,17 @@ router.post("/createBlog", authenticateUser, blogController.postBlogs);
 router.put("/updateBlog/:id", authenticateUser, blogController.updateBlogs);
 router.delete("/deleteBlog/:id", authenticateUser, blogController.deleteBlogs);
 module.exports = router;
+
+//Program Routes
+router.get("/fetchPrograms", ProgramController.getPrograms);
+router.post("/postProgram", authenticateUser, ProgramController.postPrograms);
+router.put(
+  "/updateProgram/:id",
+  authenticateUser,
+  ProgramController.updateProgram
+);
+router.delete(
+  "/deleteProgram/:id",
+  authenticateUser,
+  ProgramController.deleteProgram
+);
